@@ -1,6 +1,23 @@
 @import "tailwindcss";
 @import "./tokens.css";
 
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
+input[type="search"]::-ms-clear,
+input[type="search"]::-ms-reveal {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+
 @theme inline {
   --color-bg-primary: var(--color-bg-primary);
   --color-bg-secondary: var(--color-bg-secondary);
@@ -61,4 +78,80 @@
   --container-content: 45rem;
   --container-feed: 60rem;
   --container-page: 80rem;
+}
+
+@layer base{
+  body{
+    min-height: 100vh;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+  }
+
+  header{
+    @apply p-4 flex items-center justify-between border-b border-b-border;
+  }
+
+  button:focus-visible{
+    outline: 1px solid var(--color-accent);
+    outline-offset: 1px;
+  }
+}
+
+@layer components{
+  .wrapper{
+    min-height: 100vh;
+  }
+
+  .search-icon{
+    position: absolute;
+    left: 0.5rem;
+    color: var(--color-text-tertiary);
+  }
+
+  .search-input{
+    border: 1px solid var(--color-border);
+    padding: 0.5rem;
+    padding-left: 1.75rem;
+    color: var(--color-text-primary);
+    font-size: var(--text-sm);
+    border-radius: var(--radius-md);
+
+    &:focus-visible{
+      outline: 1px solid var(--color-text-secondary);
+    }
+  }
+
+  .add-btn{
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background-color: var(--color-accent);
+    color: var(--color-accent-subtle);
+    font-size: var(--text-sm);
+    padding-inline: 0.75rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover{
+      background-color: var(--color-accent-hover);
+    }
+  }
+
+  .user-btn{
+    font-size: var(--text-xs);
+    background-color: var(--color-accent);
+    color: var(--color-accent-subtle);
+    border-radius: var(--radius-full);
+    height: 32px;
+    aspect-ratio: 1;
+    cursor: pointer;
+    align-self: center;
+    transition: background-color 0.3s ease;
+
+    &:hover{
+      background-color: var(--color-accent-hover);
+    }
+  }
 }
