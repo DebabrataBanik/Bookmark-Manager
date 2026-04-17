@@ -86,21 +86,36 @@ input[type="search"]::-ms-reveal {
     background-color: var(--color-bg-primary);
     color: var(--color-text-primary);
     font-family: var(--font-sans);
+    line-height: normal;
   }
 
   header{
-    @apply p-4 flex items-center justify-between border-b border-b-border;
+    @apply px-5 py-3 flex items-center justify-between border-b border-b-border;
+  }
+
+  button{
+    cursor: pointer;
   }
 
   button:focus-visible{
     outline: 1px solid var(--color-accent);
     outline-offset: 1px;
   }
+
+  aside{
+    max-width: var(--spacing-sidebar);
+    background-color: var(--color-bg-secondary);
+    padding: 1rem;
+    border-right: 1px solid var(--color-border);
+    flex-grow: 1;
+  }
 }
 
 @layer components{
   .wrapper{
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
 
   .search-icon{
@@ -114,6 +129,7 @@ input[type="search"]::-ms-reveal {
     padding: 0.5rem;
     padding-left: 1.75rem;
     color: var(--color-text-primary);
+    background-color: var(--color-bg-secondary);
     font-size: var(--text-sm);
     border-radius: var(--radius-md);
 
@@ -131,7 +147,6 @@ input[type="search"]::-ms-reveal {
     font-size: var(--text-sm);
     padding-inline: 0.75rem;
     border-radius: var(--radius-md);
-    cursor: pointer;
     transition: background-color 0.3s ease;
 
     &:hover{
@@ -146,12 +161,16 @@ input[type="search"]::-ms-reveal {
     border-radius: var(--radius-full);
     height: 32px;
     aspect-ratio: 1;
-    cursor: pointer;
     align-self: center;
     transition: background-color 0.3s ease;
 
     &:hover{
       background-color: var(--color-accent-hover);
     }
+  }
+
+  .main-wrapper{
+    flex-grow: 1;
+    display: flex;
   }
 }
