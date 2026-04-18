@@ -11,6 +11,7 @@ import metascraperYoutube from 'metascraper-youtube'
 import metascraperTwitter from 'metascraper-twitter'
 import metascraperSpotify from 'metascraper-spotify'
 import htmlGet from 'html-get'
+import { getBrowserless } from './browser.js'
 
 const scraper = metascraper([
   metascraperTitle(),
@@ -28,7 +29,7 @@ const scraper = metascraper([
 
 export async function scrape(link, getBrowserless){
   try {
-    const { html, url } = await htmlGet(link, { getBrowserless, headers: {
+    const { html, url } = await htmlGet(link, { getBrowserless: getBrowserless(), headers: {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       'Accept-Language': 'en-US,en;q=0.9',
     } })

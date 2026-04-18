@@ -1,6 +1,6 @@
 import express from 'express'
 import cors from 'cors'
-import { getBrowserless } from './utils/browser.js'
+import { closeBrowserless } from './utils/browser.js'
 import { bookmarkRouter } from './routes/bookmark.js'
 
 const app = express()
@@ -17,5 +17,5 @@ app.all('/*splat', (req, res) => {
 
 app.listen(8000, () => console.log('server at http://localhost:8000'))
 
-process.on('exit', () => getBrowserless.close())
-process.on('SIGINT', () => { getBrowserless.close(); process.exit() })
+process.on('SIGINT', async () => { await closeBrowserless(); process.exit(0) })
+process.on('SIGTERM', async () => { await closeBrowserless(); process.exit(0) })
