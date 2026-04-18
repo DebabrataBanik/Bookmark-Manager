@@ -11,8 +11,22 @@
     "start": "nodemon start"
   },
   "dependencies": {
+    "browserless": "^10.11.2",
     "cors": "^2.8.6",
     "express": "^5.2.1",
+    "html-get": "^2.22.2",
+    "metascraper": "^5.50.1",
+    "metascraper-author": "^5.50.1",
+    "metascraper-date": "^5.50.1",
+    "metascraper-description": "^5.50.1",
+    "metascraper-image": "^5.50.1",
+    "metascraper-logo": "^5.50.1",
+    "metascraper-publisher": "^5.50.1",
+    "metascraper-spotify": "^5.50.1",
+    "metascraper-title": "^5.50.1",
+    "metascraper-twitter": "^5.45.6",
+    "metascraper-url": "^5.50.1",
+    "metascraper-youtube": "^5.50.1",
     "nodemon": "^3.1.14"
   }
 }
