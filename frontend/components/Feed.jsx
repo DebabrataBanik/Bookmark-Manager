@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { nanoid } from 'nanoid'
+import Logo from "./Logo"
 
 const Feed = () => {
 
@@ -54,6 +55,7 @@ const Feed = () => {
               bookmarks.map(item => (
                 <article key={item._id}>
                   <div className="flex items-center gap-4 border-b border-b-border py-3 px-4">
+                    <Logo domain={item.domain} />
                     <div className="">
                       <h2 className="font-bold">{item.title}</h2>
                       <span className="text-xs text-text-secondary">{item.domain}</span>

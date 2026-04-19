@@ -194,4 +194,37 @@ input[type="search"]::-ms-reveal {
     @apply text-xs py-0.5 px-2 rounded-sm bg-accent-subtle text-accent;
   }
 
+  .logo-wrapper {
+    border-radius: 9999px;
+    position: relative;
+    overflow: hidden;
+    height: 50px;
+    width: 50px;
+    flex-shrink: 0;
+  }
+
+  .fallback {
+    background-color: var(--color-accent-subtle);
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    display: flex;
+    height: 100%;
+    width: 100%;
+  }
+
+  .fallback p {
+    font-weight: bold;
+    font-size: 20px;
+    color: var(--color-accent)
+  }
+
+  .icon {
+    position: absolute;
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+  }
 }
