@@ -6,6 +6,7 @@ export async function getBookmarks(req, res){
     const bookmarks = await Bookmark.find().sort({ createdAt: -1 })
     res.json(bookmarks)
   } catch (error) {
-    res.status(500).json({ error: error, message: error.message })
+    console.log(error)
+    res.status(500).json({ message: error.message })
   }
 }

@@ -15,15 +15,16 @@ const Feed = () => {
         const res = await fetch('http://localhost:8000/api')
         if(!res.ok){
           const err = await res.json()
-          throw new Error(data.message || `HTTP: ${res.status}: ${res.statusText}`)
+          throw new Error(err.message || `HTTP: ${res.status}: ${res.statusText}`)
         }
         const data = await res.json()
         setBookmarks(data)
 
       } catch (error) {
         if (error instanceof TypeError && error.message === "Failed to fetch") {
-          setError("Server is not running or still starting")
+          setError("Server is unreachable.")
         } else {
+          console.log(error)
           setError(error.message)
         }
       } finally {
