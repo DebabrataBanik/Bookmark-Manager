@@ -1,5 +1,6 @@
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
+import Feed from "../components/Feed"
 
 const App = () => {
   return (
@@ -7,6 +8,7 @@ const App = () => {
       <Header />
       <div className="main-wrapper">
         <Sidebar />
+        <Feed />
       </div>
     </div>
   )
