@@ -1,6 +1,6 @@
 import { Bookmark, PlusIcon, Search, SearchIcon } from 'lucide-react'
 
-const Header = () => {
+const Header = ({ onOpen }) => {
   return (
     <header >
       <a href="/">
@@ -22,7 +22,7 @@ const Header = () => {
             className='search-input'
           />
         </label>
-        <button className='add-btn' type='button'> 
+        <button onClick={onOpen} className='add-btn' type='button'> 
           <PlusIcon aria-hidden='true' size={15} /> Add Bookmark
         </button>
         <button type='button' className='user-btn'>
