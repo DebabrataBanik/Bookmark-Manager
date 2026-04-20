@@ -259,7 +259,6 @@ input[type="search"]::-ms-reveal {
   .form-label{
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
     padding-inline: 0.25rem;
     font-size: 13px;
   }

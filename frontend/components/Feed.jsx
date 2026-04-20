@@ -57,7 +57,7 @@ const Feed = () => {
                 <article key={item._id}>
                   <div className="flex items-center gap-4 border-b border-b-border py-3 px-4">
                     <Logo domain={item.domain} />
-                    <div className="">
+                    <div>
                       <h2 className="font-bold">{item.title}</h2>
                       <span className="text-xs text-text-secondary">{item.domain}</span>
                     </div>
