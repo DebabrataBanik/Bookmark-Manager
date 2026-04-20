@@ -1,32 +1,18 @@
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
 import validator from 'validator'
 
 const BookmarkForm = ({ onClose }) => {
-  const wrapperRef = useRef(null)
-
   const [formData, setFormData] = useState({
     url: '',
     title: '',
     description: '',
     category: ''
   })
-  const [error, setError] = useState({})
+  const [error, setError] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [message, setMessage] = useState(null)
 
-  useEffect(() => {
-    const handleOutsideClick = (e) => {
-      if(wrapperRef.current && !wrapperRef.current.contains(e.target)){
-        onClose()
-      }
-    }
-
-    document.addEventListener('mousedown', handleOutsideClick)
-
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick)
-    }
-  }, [onClose])
-
-  function handleSubmit(e){
+  async function handleSubmit(e){
     e.preventDefault()
 
     const data = Object.fromEntries(
@@ -50,13 +36,43 @@ const BookmarkForm = ({ onClose }) => {
       setError(error)
       return 
     }
+
+    setIsSubmitting(true)
     
     const validData = {
       ...data,
       url
     }
+    
+    try {
+      setError(null)
+      const res = await fetch('http://localhost:8000/api/add', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(validData)
+      })
 
-    console.log(validData)
+      if(!res.ok){
+        const err = await res.json()
+        throw new Error(err.message || `Request failed: ${res.status} ${res.statusText}`)
+      }
+      const data = await res.json()
+      setMessage(data.message)
+      setFormData({ url: '',
+        title: '',
+        description: '',
+        category: ''
+      })
+
+    } catch (error) {
+      console.error(error)
+      setError({ message: error.message })
+    } finally{
+      setIsSubmitting(false)
+    }
+
   }
 
   function handleChange(e){
@@ -73,10 +89,17 @@ const BookmarkForm = ({ onClose }) => {
   }
 
   return (
-    <div ref={wrapperRef} className="form-wrapper">
+    <div className="form-wrapper">
       <form onSubmit={handleSubmit} className="bookmark-form">
         <h1 className="text-xl font-bold mb-2 mx-2">Add Bookmark</h1>
-
+        <div className="h-5 text-center">
+          {
+            error?.message && <span className="text-sm text-center text-error">{error.message}</span>
+          }
+          {
+            message && <span className="text-sm text-center text-success">{message}</span>
+          }
+        </div>
         <div className="flex gap-2">
           <label className="w-1/2 form-label">
             <span className="ml-1">URL</span>
@@ -89,9 +112,11 @@ const BookmarkForm = ({ onClose }) => {
               value={formData.url}
               onChange={handleChange}
             /> 
-            {
-              error?.url && <span className="ml-1 text-xs text-error">{error.url}</span>
-            }
+            <span className="h-4 ml-1 text-xs text-error">
+              {
+                error?.url && error.url
+              }
+            </span>
           </label>
 
           <label className="w-1/2 form-label">
@@ -105,9 +130,11 @@ const BookmarkForm = ({ onClose }) => {
               value={formData.title}
               onChange={handleChange}
               />
-            {
-              error?.title && <span className="ml-1 text-xs text-error">{error.title}</span>
-            }
+            <span className="h-4 ml-1 text-xs text-error">
+              {
+                error?.title && error.title
+              }
+            </span>
           </label>
         </div>
 
@@ -135,8 +162,22 @@ const BookmarkForm = ({ onClose }) => {
         </label>
 
         <div className="mt-4 mx-1 flex items-center justify-between">
-          <button onClick={onClose} type="button" className="close-btn">Close</button>
-          <button type="submit" className="submit-btn">Add</button>
+          <button 
+            disabled={isSubmitting} 
+            onClick={onClose} 
+            type="button" 
+            className="btn close-btn"
+          >
+            Close
+          </button>
+          
+          <button 
+            type="submit" 
+            className="btn submit-btn"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Adding...' : 'Add'}
+          </button>
         </div>
         
       </form>
