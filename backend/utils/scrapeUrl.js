@@ -6,12 +6,10 @@ import metascraperUrl from 'metascraper-url'
 import metascraperAuthor from 'metascraper-author'
 import metascraperDate from 'metascraper-date'
 import metascraperPublisher from 'metascraper-publisher'
-import metascraperLogo from 'metascraper-logo'
 import metascraperYoutube from 'metascraper-youtube'
 import metascraperTwitter from 'metascraper-twitter'
 import metascraperSpotify from 'metascraper-spotify'
 import htmlGet from 'html-get'
-import { getBrowserless } from './browser.js'
 
 const scraper = metascraper([
   metascraperTitle(),
@@ -21,24 +19,24 @@ const scraper = metascraper([
   metascraperAuthor(),
   metascraperDate(),
   metascraperPublisher(),
-  metascraperLogo(),
   metascraperYoutube(),
   metascraperTwitter(),
   metascraperSpotify()
 ])
 
-export async function scrape(link, getBrowserless){
+export async function scrape(link){
   try {
-    const { html, url } = await htmlGet(link, { getBrowserless: getBrowserless(), headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      'Accept-Language': 'en-US,en;q=0.9',
-    } })
-    const metadata = await scraper({ html, url })
+    const res = await fetch(link, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+      }
+    })
 
-    if(!metadata.logo){
-      const domain = new URL(url).hostname
-      metadata.logo = `https://www.google.com/s2/favicons?sz=128&domain=${domain}`;
-    }
+    const html = await res.text()
+
+    const metadata = await scraper({ html, url: link })
+
     return { success: true, metadata }
   } catch (error) {
     console.log(error)
