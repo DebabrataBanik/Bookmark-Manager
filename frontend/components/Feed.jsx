@@ -62,7 +62,7 @@ const Feed = ({ setBookmarks, bookmarks }) => {
                     </div>
                   </div>
                   <p className="text-sm text-text-secondary px-4">{item.description}</p>
-                  <div className="px-4 pb-4 flex items-center mt-auto gap-1">
+                  <div className="px-4 pb-4 flex items-center mt-auto gap-2">
                     {
                       item.category.map(tag => <span key={nanoid()} className="tags">{tag}</span>)
                     }

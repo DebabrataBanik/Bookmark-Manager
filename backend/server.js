@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import { bookmarkRouter } from './routes/bookmark.js'
+import { categoryRouter } from './routes/category.js'
 import { connectDB } from './config/db.js'
 import dotenv from 'dotenv'
 
@@ -15,6 +16,7 @@ app.use(express.json())
 await connectDB()
 
 app.use('/api', bookmarkRouter)
+app.use('/api/categories', categoryRouter)
 
 app.all('/*splat', (req, res) => {
   res.status(404).json({ message: 'Invalid Route' })
