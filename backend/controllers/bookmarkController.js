@@ -38,7 +38,7 @@ export async function addBookmark(req, res){
       description: description || metadata.description || '',
       publisher: metadata.publisher || '',
       author: metadata.author || '',
-      domain: new URL(url).hostname,
+      domain: new URL(url).hostname.replace(/^www\./, ''),
       date: metadata.date || new Date().toISOString(),
       category: category ? category.split(',').map(tag => tag.trim()) : []
     }

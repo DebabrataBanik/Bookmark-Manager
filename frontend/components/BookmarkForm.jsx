@@ -1,7 +1,7 @@
 import { useState } from "react"
 import validator from 'validator'
 
-const BookmarkForm = ({ onClose }) => {
+const BookmarkForm = ({ onClose, onBookmarkAdd }) => {
   const [formData, setFormData] = useState({
     url: '',
     title: '',
@@ -58,13 +58,14 @@ const BookmarkForm = ({ onClose }) => {
         const err = await res.json()
         throw new Error(err.message || `Request failed: ${res.status} ${res.statusText}`)
       }
-      const data = await res.json()
-      setMessage(data.message)
+      const result = await res.json()
+      setMessage(result.message)
       setFormData({ url: '',
         title: '',
         description: '',
         category: ''
       })
+      onBookmarkAdd(result.data)
 
     } catch (error) {
       console.error(error)

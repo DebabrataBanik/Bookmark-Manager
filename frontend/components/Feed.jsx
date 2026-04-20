@@ -2,9 +2,8 @@ import { useEffect, useState } from "react"
 import { nanoid } from 'nanoid'
 import Logo from "./Logo"
 
-const Feed = () => {
+const Feed = ({ setBookmarks, bookmarks }) => {
 
-  const [bookmarks, setBookmarks] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 

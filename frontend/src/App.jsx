@@ -7,9 +7,14 @@ import { useState } from "react"
 const App = () => {
 
   const [showBookmarkForm, setShowBookmarkForm] = useState(false)
+  const [bookmarks, setBookmarks] = useState([])
 
   const closeForm = () => setShowBookmarkForm(false)
   const openForm = () => setShowBookmarkForm(true)
+
+  function handleBookmarkAdd(newBookmark){
+    setBookmarks(prev => [newBookmark, ...prev])
+  }
 
   return (
     <div className="wrapper">
@@ -17,11 +22,11 @@ const App = () => {
         <Header onOpen={openForm} />
         <div className="main-wrapper">
           <Sidebar />
-          <Feed />
+          <Feed setBookmarks={setBookmarks} bookmarks={bookmarks} />
         </div>
       </div>
       {
-        showBookmarkForm && <BookmarkForm onClose={closeForm} />
+        showBookmarkForm && <BookmarkForm onClose={closeForm} onBookmarkAdd={handleBookmarkAdd} />
       }
     </div>
   )
