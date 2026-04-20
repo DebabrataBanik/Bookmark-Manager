@@ -40,14 +40,15 @@ const Sidebar = () => {
         <form className="flex flex-col gap-4 mt-2">
           {
             categories.length > 0 ? (
-              categories.map(tag => {
+              categories.map(cat => {
                 return (
                   <label key={nanoid()} className="checkbox-label">
                     <input 
                       type="checkbox"
                       className="checkbox"
                     />
-                    {tag}
+                    {cat.name}
+                    <span className="count">{cat.count}</span>
                   </label>
                 )
               })

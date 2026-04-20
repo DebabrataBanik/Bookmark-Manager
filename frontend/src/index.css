@@ -355,4 +355,16 @@ input[type="search"]::-ms-reveal {
   .checkbox-label:has(.checkbox:focus-visible)::before{
     border: 1px solid var(--color-accent);
   }
+
+  .count{
+    font-size: var(--text-xs);
+    margin-left: auto;
+    width: 20px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-accent-subtle);
+    border-radius: 50%;
+  }
 }
