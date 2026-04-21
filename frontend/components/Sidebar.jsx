@@ -1,8 +1,7 @@
 import { ArchiveIcon, HomeIcon } from "lucide-react"
 import { useEffect, useState } from "react"
-import { nanoid } from 'nanoid'
 
-const Sidebar = () => {
+const Sidebar = ({ selectedTags, onTagSelect }) => {
 
   const [categories, setCategories] = useState([])
 
@@ -23,6 +22,10 @@ const Sidebar = () => {
     getCategories()
   }, [])
 
+  function handleChange(e){
+    const { value, checked } = e.target
+    onTagSelect(value, checked)
+  }
 
   return (
     <aside>
@@ -42,10 +45,13 @@ const Sidebar = () => {
             categories.length > 0 ? (
               categories.map(cat => {
                 return (
-                  <label key={nanoid()} className="checkbox-label">
+                  <label key={cat.name} className="checkbox-label">
                     <input 
                       type="checkbox"
                       className="checkbox"
+                      value={cat.name}
+                      checked={selectedTags.includes(cat.name)}
+                      onChange={handleChange}
                     />
                     {cat.name}
                     <span className="count">{cat.count}</span>
@@ -54,7 +60,7 @@ const Sidebar = () => {
               })
             )
             :
-            'Getting categories'
+            <span className="text-xs">Getting Cats</span>
           }
         </form>
       </div>
