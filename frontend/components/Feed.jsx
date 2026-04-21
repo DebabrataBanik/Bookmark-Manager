@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { nanoid } from 'nanoid'
 import Logo from "./Logo"
+import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon } from 'lucide-react'
 
 const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
 
@@ -62,23 +63,48 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
             bookmarks.length === 0 ? <p className="text-sm text-text-tertiary">No bookmarks to show.</p>
             :
             (
-              bookmarks.map(item => (
+              bookmarks.map(item => { 
+                const date = new Date(item.createdAt)
+                const createdDate = date.getDate()
+                const createdMonth = date.toLocaleString('default', { month: 'short' })
+                const createdAt = `${createdDate} ${createdMonth}`
+
+                return (
                 <article key={item._id}>
-                  <div className="flex items-center gap-4 border-b border-b-border py-3 px-4">
-                    {/* <Logo domain={item.domain} /> */}
+                  <div className="flex items-center gap-4 p-4">
+                    <Logo domain={item.domain} />
                     <div>
-                      <h2 className="font-bold">{item.title}</h2>
+                      <h2 className="font-bold text-lg">{item.title}</h2>
                       <span className="text-xs text-text-secondary">{item.domain}</span>
                     </div>
                   </div>
-                  <p className="text-sm text-text-secondary px-4">{item.description}</p>
-                  <div className="px-4 pb-4 flex items-center mt-auto gap-2">
-                    {
-                      item.category.map(tag => <span key={nanoid()} className="tags">{tag}</span>)
-                    }
+                  <div className="px-4 text-sm">
+                    <p className="pt-4 ext-sm text-text-secondary border-t border-t-border">{item.description}</p>
+                    <div className="py-4 flex items-center mt-auto gap-2">
+                      {
+                        item.category.map(tag => <span key={nanoid()} className="tags">{tag}</span>)
+                      }
+                    </div>
+                  </div>
+                  <div className="article-footer">
+                    <div className="flex items-center gap-5">
+                      <span className="stat">
+                        <EyeIcon size={12} />
+                        1
+                      </span>
+                      <span className="stat">
+                        <Clock4Icon size={12} />
+                        12 Jan
+                      </span>
+                      <span className="stat">
+                        <CalendarIcon size={12} />
+                        {createdAt}
+                      </span>
+                    </div>
+                    <span><PinIcon size={15} /></span>
                   </div>
                 </article>
-              ))
+              )})
             )
           )
         }
