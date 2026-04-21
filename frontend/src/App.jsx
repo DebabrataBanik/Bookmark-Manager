@@ -9,6 +9,7 @@ const App = () => {
   const [showBookmarkForm, setShowBookmarkForm] = useState(false)
   const [bookmarks, setBookmarks] = useState([])
   const [selectedTags, setSelectedTags] = useState([])
+  const [searchInput, setSearchInput] = useState('')
 
   const closeForm = () => setShowBookmarkForm(false)
   const openForm = () => setShowBookmarkForm(true)
@@ -26,13 +27,34 @@ const App = () => {
     })
   }
 
+  function handleSearchInputChange(value){
+    setSearchInput(value)
+  }
+
   return (
     <div className="wrapper">
+
       <div className={`flex flex-col grow ${showBookmarkForm ? 'blur-sm pointer-events-none select-none' : ''}`}>
-        <Header onOpen={openForm} />
+
+        <Header 
+          onOpen={openForm} 
+          searchInput={searchInput} 
+          onSearchChange={handleSearchInputChange} 
+        />
+        
         <div className="main-wrapper">
-          <Sidebar selectedTags={selectedTags} onTagSelect={handleSelectedTags} />
-          <Feed selectedTags={selectedTags} setBookmarks={setBookmarks} bookmarks={bookmarks} />
+          
+          <Sidebar 
+            selectedTags={selectedTags} 
+            onTagSelect={handleSelectedTags} 
+          />
+          <Feed
+            searchInput={searchInput} 
+            selectedTags={selectedTags} 
+            setBookmarks={setBookmarks} 
+            bookmarks={bookmarks} 
+          />
+
         </div>
       </div>
       {

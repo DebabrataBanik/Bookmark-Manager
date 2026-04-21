@@ -1,13 +1,22 @@
 import { scrape } from "../utils/scrapeUrl.js";
 import { Bookmark } from "../models/Bookmark.js";
 
+function sanitizeData(text){
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 export async function getBookmarks(req, res){
   try {
-    const { category } = req.query
+    const { category, search } = req.query
     let filter = {}
     if(category){
       const tags = category.split(',')
       filter.category = { $in: tags }
+    }
+
+    if(search){
+      const searchStr = sanitizeData(search)
+      filter.title = { $regex: searchStr, $options: 'i' }
     }
 
     const bookmarks = await Bookmark.find(filter).sort({ createdAt: -1 })

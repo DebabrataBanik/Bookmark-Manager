@@ -1,6 +1,6 @@
 import { Bookmark, PlusIcon, Search, SearchIcon } from 'lucide-react'
 
-const Header = ({ onOpen }) => {
+const Header = ({ onOpen, onSearchChange, searchInput }) => {
   return (
     <header >
       <a href="/">
@@ -20,6 +20,8 @@ const Header = ({ onOpen }) => {
             name='search'
             placeholder='Search by title...'
             className='search-input'
+            value={searchInput}
+            onChange={(e) => onSearchChange(e.target.value)}
           />
         </label>
         <button onClick={onOpen} className='add-btn' type='button'> 

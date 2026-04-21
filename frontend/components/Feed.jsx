@@ -2,18 +2,23 @@ import { useEffect, useState } from "react"
 import { nanoid } from 'nanoid'
 import Logo from "./Logo"
 
-const Feed = ({ selectedTags, setBookmarks, bookmarks }) => {
+const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  const params = new URLSearchParams()
+  
+  if(selectedTags.length > 0){
+    params.set('category', selectedTags.join(','))
+  }
+  if(searchInput.trim()){
+    params.set('search', searchInput.trim())
+  }
+  const url = `http://localhost:8000/api?${params.toString()}`
+
   useEffect(() => {
-    async function getData(){
-      let url = 'http://localhost:8000/api'
-      if(selectedTags.length > 0){
-        const query = selectedTags.join(',')
-        url+=`?category=${query}`
-      }
+    async function getData(){ 
       setError(null)
       try {
         const res = await fetch(url)
@@ -36,7 +41,7 @@ const Feed = ({ selectedTags, setBookmarks, bookmarks }) => {
       }
     }
     getData()
-  }, [selectedTags])
+  }, [selectedTags, searchInput])
 
   return (
     <main>
@@ -60,7 +65,7 @@ const Feed = ({ selectedTags, setBookmarks, bookmarks }) => {
               bookmarks.map(item => (
                 <article key={item._id}>
                   <div className="flex items-center gap-4 border-b border-b-border py-3 px-4">
-                    <Logo domain={item.domain} />
+                    {/* <Logo domain={item.domain} /> */}
                     <div>
                       <h2 className="font-bold">{item.title}</h2>
                       <span className="text-xs text-text-secondary">{item.domain}</span>
