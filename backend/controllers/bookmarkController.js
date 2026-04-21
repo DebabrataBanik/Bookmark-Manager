@@ -3,7 +3,14 @@ import { Bookmark } from "../models/Bookmark.js";
 
 export async function getBookmarks(req, res){
   try {
-    const bookmarks = await Bookmark.find().sort({ createdAt: -1 })
+    const { category } = req.query
+    let filter = {}
+    if(category){
+      const tags = category.split(',')
+      filter.category = { $in: tags }
+    }
+
+    const bookmarks = await Bookmark.find(filter).sort({ createdAt: -1 })
     res.json(bookmarks)
   } catch (error) {
     console.log(error)

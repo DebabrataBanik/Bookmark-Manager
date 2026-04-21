@@ -2,16 +2,21 @@ import { useEffect, useState } from "react"
 import { nanoid } from 'nanoid'
 import Logo from "./Logo"
 
-const Feed = ({ setBookmarks, bookmarks }) => {
+const Feed = ({ selectedTags, setBookmarks, bookmarks }) => {
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     async function getData(){
+      let url = 'http://localhost:8000/api'
+      if(selectedTags.length > 0){
+        const query = selectedTags.join(',')
+        url+=`?category=${query}`
+      }
       setError(null)
       try {
-        const res = await fetch('http://localhost:8000/api')
+        const res = await fetch(url)
         if(!res.ok){
           const err = await res.json()
           throw new Error(err.message || `HTTP: ${res.status}: ${res.statusText}`)
@@ -31,7 +36,7 @@ const Feed = ({ setBookmarks, bookmarks }) => {
       }
     }
     getData()
-  }, [])
+  }, [selectedTags])
 
   return (
     <main>
