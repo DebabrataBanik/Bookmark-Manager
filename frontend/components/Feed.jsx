@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
 import { nanoid } from 'nanoid'
 import Logo from "./Logo"
-import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon } from 'lucide-react'
+import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react'
 
 const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [openId, setOpenId] = useState(null)
 
   const params = new URLSearchParams()
   
@@ -44,6 +45,10 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
     getData()
   }, [selectedTags, searchInput])
 
+  function handleToggle(id){
+    setOpenId(prev => prev === id ? null : id)
+  }
+
   return (
     <main>
       <div>
@@ -69,7 +74,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
                 const createdMonth = date.toLocaleString('default', { month: 'short' })
                 const createdAt = `${createdDate} ${createdMonth}`
 
-                return (
+              return (
                 <article key={item._id}>
                   <div className="flex items-center gap-4 p-4">
                     <Logo domain={item.domain} />
@@ -77,6 +82,30 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
                       <h2 className="font-bold text-lg">{item.title}</h2>
                       <span className="text-xs text-text-secondary">{item.domain}</span>
                     </div>
+                    <button onClick={() => handleToggle(item._id)} type="button" className="modify-btn">
+                      <EllipsisVerticalIcon size={20} />
+                    </button>
+                    {
+                      openId === item._id && (
+                        <div className='options'>
+                          <button 
+                            type="button" 
+                            className="edit-btn"
+                          >
+                            <PencilIcon size={14} />
+                            Edit 
+                          </button>
+                          <button 
+                            type="button" 
+                            className="delete-btn"
+                          >
+                            <TrashIcon size={14} /> 
+                            Delete 
+                          </button>
+                        </div>
+                      )
+                    }
+
                   </div>
                   <div className="px-4 text-sm">
                     <p className="pt-4 ext-sm text-text-secondary border-t border-t-border">{item.description}</p>
@@ -101,7 +130,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
                         {createdAt}
                       </span>
                     </div>
-                    <span><PinIcon size={15} /></span>
+                    <button type="button"><PinIcon size={15} /></button>
                   </div>
                 </article>
               )})
