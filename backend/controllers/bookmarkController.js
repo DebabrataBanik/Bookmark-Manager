@@ -57,7 +57,10 @@ export async function addBookmark(req, res){
       author: metadata.author || '',
       domain: new URL(url).hostname.replace(/^www\./, ''),
       date: metadata.date || new Date().toISOString(),
-      category: category ? category.split(',').map(tag => tag.trim()) : []
+      category: category ? category.split(',').map(tag => {
+        const trimmed = tag.trim()
+        return trimmed.charAt(0).toUpperCase() + trimmed.slice(1) 
+      }) : []
     }
 
     const savedBookmark = await Bookmark.create(bookmarkData)
