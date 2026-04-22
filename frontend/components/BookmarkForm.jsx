@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import validator from 'validator'
 
 const BookmarkForm = ({ onClose, onBookmarkAdd }) => {
@@ -11,6 +11,16 @@ const BookmarkForm = ({ onClose, onBookmarkAdd }) => {
   const [error, setError] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState(null)
+
+  useEffect(() => {
+    if(!message) return
+
+    const timer = setTimeout(() => {
+      setMessage(null)
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [message])
 
   async function handleSubmit(e){
     e.preventDefault()

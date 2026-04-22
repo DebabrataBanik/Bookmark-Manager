@@ -1,26 +1,6 @@
 import { ArchiveIcon, HomeIcon } from "lucide-react"
-import { useEffect, useState } from "react"
 
-const Sidebar = ({ selectedTags, onTagSelect }) => {
-
-  const [categories, setCategories] = useState([])
-
-  useEffect(() => {
-    async function getCategories(){
-      try {
-        const res = await fetch('http://localhost:8000/api/categories')
-        if(!res.ok){
-          const err = await res.json()
-          throw new Error(err.message || `Failed to fetch categories: ${res.status} ${res.statusText}`)
-        }
-        const data = await res.json()
-        setCategories(data)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    getCategories()
-  }, [])
+const Sidebar = ({ categories, selectedTags, onTagSelect }) => {  
 
   function handleChange(e){
     const { value, checked } = e.target

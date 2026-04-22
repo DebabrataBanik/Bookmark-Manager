@@ -2,7 +2,7 @@ import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
 import Feed from "../components/Feed"
 import BookmarkForm from "../components/BookmarkForm"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 const App = () => {
 
@@ -10,6 +10,24 @@ const App = () => {
   const [bookmarks, setBookmarks] = useState([])
   const [selectedTags, setSelectedTags] = useState([])
   const [searchInput, setSearchInput] = useState('')
+  const [categories, setCategories] = useState([])
+
+  useEffect(() => {
+    async function getCategories(){
+      try {
+        const res = await fetch('http://localhost:8000/api/categories')
+        if(!res.ok){
+          const err = await res.json()
+          throw new Error(err.message || `Failed to fetch categories: ${res.status} ${res.statusText}`)
+        }
+        const data = await res.json()
+        setCategories(data)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    getCategories()
+  }, [bookmarks.length])
 
   const closeForm = () => setShowBookmarkForm(false)
   const openForm = () => setShowBookmarkForm(true)
@@ -45,6 +63,7 @@ const App = () => {
         <div className="main-wrapper">
           
           <Sidebar 
+            categories={categories}
             selectedTags={selectedTags} 
             onTagSelect={handleSelectedTags} 
           />
