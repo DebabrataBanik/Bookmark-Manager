@@ -106,6 +106,7 @@ input[type="search"]::-ms-reveal {
     width: var(--spacing-sidebar);
     padding: 1rem;
     border-right: 1px solid var(--color-border);
+    flex-shrink: 0;
   }
 
   main{
@@ -125,7 +126,6 @@ input[type="search"]::-ms-reveal {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    position: relative;
   }
 
   .search-icon{
@@ -239,7 +239,7 @@ input[type="search"]::-ms-reveal {
   /* Bookmark Form */
 
   .form-wrapper{
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -334,7 +334,6 @@ input[type="search"]::-ms-reveal {
     display: flex;
     align-items: end;
     gap: 0.75rem;
-    position: relative;
     cursor: pointer;
   }
 
@@ -443,6 +442,78 @@ input[type="search"]::-ms-reveal {
 
     &:focus-visible{
       outline-color: var(--color-error);
+    }
+  }
+
+  .delete-dialog-wrapper{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+  }
+  
+  .dialog-container{
+    width: 20rem;
+    background-color: var(--color-bg-primary);
+    padding-top: 1rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .trash{
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    background-color: #dc262620;
+    color: var(--color-error);
+  }
+
+  .btn-container{
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background-color: var(--color-bg-secondary);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  .btn-container button{
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  .delete{
+    color: var(--color-error);
+    background-color: #dc262620;
+    transition: background-color 0.3s ease;
+
+    &:hover{
+      background-color: #dc262630;
+    }
+  }
+
+  .cancel{
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border-subtle);
+
+    transition: background-color 0.3s ease;
+
+    &:hover{
+      background-color: var(--color-bg-secondary);
     }
   }
 }

@@ -1,5 +1,6 @@
 import { scrape } from "../utils/scrapeUrl.js";
 import { Bookmark } from "../models/Bookmark.js";
+import mongoose from "mongoose";
 
 function sanitizeData(text){
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -68,6 +69,28 @@ export async function addBookmark(req, res){
       return res.status(409).json({ message: 'Bookmark already exists. '})
     }
 
+    console.log(error)
+    res.status(500).json({ message: error.message })
+  }
+}
+
+export async function deleteBookmark(req, res){
+  try {
+    const { id } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid ID format' })
+    }
+
+    const result = await Bookmark.deleteOne({ _id: id })
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'Bookmark not found' })
+    }
+
+    res.status(200).json({  message: 'Bookmark deleted successfully' })
+    
+  } catch (error) {
     console.log(error)
     res.status(500).json({ message: error.message })
   }

@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react"
 import { nanoid } from 'nanoid'
-import Logo from "./Logo"
+import Logo from "./subcomponents/Logo"
 import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react'
+import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 
 const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [openId, setOpenId] = useState(null)
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
+  const [selectedId, setSelectedId] = useState(null)
+  const [message, setMessage] = useState(null)
 
   const params = new URLSearchParams()
   
@@ -45,14 +49,73 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
     getData()
   }, [selectedTags, searchInput])
 
+  useEffect(() => {
+    if(!message) return
+
+    const timer = setTimeout(() => {
+      setMessage(null)
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [message])
+
+  async function deleteBookmark(id){
+    try {
+      const res = await fetch(`http://localhost:8000/api/bookmark/${id}`, {
+        method: 'DELETE'
+      })
+      const data = await res.json()
+      if(!res.ok){
+        return { success: false, data }
+      }
+      return { success: true, data }
+    } catch (error) {
+      console.log(error)
+      return { success: false, data: { message: 'Network error' } }
+    } finally {
+      setSelectedId(null)
+      handleClose()
+    }
+  }
+
   function handleToggle(id){
     setOpenId(prev => prev === id ? null : id)
   }
 
+  function handleOpenDeleteDialog(id){
+    console.log(id)
+    setOpenDeleteDialog(true)
+    setSelectedId(id)
+  } 
+
+  async function handleDelete(){
+    if(!selectedId) return
+
+    const result = await deleteBookmark(selectedId)
+
+    if(!result.success){
+      setMessage(result)
+      return
+    }
+
+    setBookmarks(prev => prev.filter(item => item._id !== selectedId))
+    setMessage(result)
+  }
+
+  function handleClose(){
+    setOpenDeleteDialog(false)
+    setSelectedId(null)
+    setOpenId(null)
+  }
+
   return (
     <main>
-      <div>
+      <div className="flex items-center gap-10">
         <h1 className="text-lg font-bold">All bookmarks</h1>
+        {
+          message && 
+          <span className={`text-sm ${message.success ? 'text-success' : 'text-error'}`}>{message.data.message}</span>
+        }
       </div>
 
       <section className="bookmarks-container">
@@ -77,7 +140,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
               return (
                 <article key={item._id}>
                   <div className="flex items-center gap-4 p-4">
-                    <Logo domain={item.domain} />
+                    {/* <Logo domain={item.domain} /> */}
                     <div>
                       <h2 className="font-bold text-lg">{item.title}</h2>
                       <span className="text-xs text-text-secondary">{item.domain}</span>
@@ -98,6 +161,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
                           <button 
                             type="button" 
                             className="delete-btn"
+                            onClick={() => handleOpenDeleteDialog(item._id)}
                           >
                             <TrashIcon size={14} /> 
                             Delete 
@@ -138,6 +202,9 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
           )
         }
       </section>
+      {
+        openDeleteDialog && <ConfirmDeleteDialog onDelete={handleDelete} onClose={handleClose} />
+      }
     </main>
   )
 }
