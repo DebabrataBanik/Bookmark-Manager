@@ -1,6 +1,7 @@
 import { scrape } from "../utils/scrapeUrl.js";
 import { Bookmark } from "../models/Bookmark.js";
 import mongoose from "mongoose";
+import { bookmarkSchema } from "../schema/BookmarkSchema.js";
 
 function sanitizeData(text){
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -30,21 +31,19 @@ export async function getBookmarks(req, res){
 
 export async function addBookmark(req, res){
   try {
-    let { url, title, description, category } = req.body
+    const result = bookmarkSchema.safeParse(req.body)
 
-    url = url.trim()
-    title = title.trim()
-    description = description?.trim() || ''
-    category = category?.trim() || ''
-
-    if(!url || !title){
-      return res.status(400).json({ message: 'Required fields are missing.' })
+    if(!result.success){
+      const formatted = result.error.flatten().fieldErrors
+      return res.status(400).json(formatted)
     }
+
+    let { url, title, description, category } = result.data
 
     const scrapeRes = await scrape(url)
 
     if(!scrapeRes.success){
-      return res.status(500).json({ message: 'Scraping failed '})
+      return res.status(500).json({ message: "Could not scrape data for that url" })
     }
     
     const metadata = scrapeRes.metadata
@@ -57,10 +56,7 @@ export async function addBookmark(req, res){
       author: metadata.author || '',
       domain: new URL(url).hostname.replace(/^www\./, ''),
       date: metadata.date || new Date().toISOString(),
-      category: category ? category.split(',').map(tag => {
-        const trimmed = tag.trim()
-        return trimmed.charAt(0).toUpperCase() + trimmed.slice(1) 
-      }) : []
+      category
     }
 
     const savedBookmark = await Bookmark.create(bookmarkData)

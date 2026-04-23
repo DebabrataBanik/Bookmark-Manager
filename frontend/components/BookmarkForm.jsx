@@ -66,7 +66,8 @@ const BookmarkForm = ({ onClose, onBookmarkAdd }) => {
 
       if(!res.ok){
         const err = await res.json()
-        throw new Error(err.message || `Request failed: ${res.status} ${res.statusText}`)
+        setError(err)
+        return
       }
       const result = await res.json()
       setMessage(result.message)
