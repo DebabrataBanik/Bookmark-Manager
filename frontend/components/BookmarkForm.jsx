@@ -83,7 +83,6 @@ const BookmarkForm = ({ onClose, onBookmarkAdd }) => {
     } finally{
       setIsSubmitting(false)
     }
-
   }
 
   function handleChange(e){

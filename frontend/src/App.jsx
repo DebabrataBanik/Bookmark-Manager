@@ -12,28 +12,35 @@ const App = () => {
   const [searchInput, setSearchInput] = useState('')
   const [categories, setCategories] = useState([])
 
-  useEffect(() => {
-    async function getCategories(){
-      try {
-        const res = await fetch('http://localhost:8000/api/categories')
-        if(!res.ok){
-          const err = await res.json()
-          throw new Error(err.message || `Failed to fetch categories: ${res.status} ${res.statusText}`)
-        }
-        const data = await res.json()
-        setCategories(data)
-      } catch (error) {
-        console.error(error)
+  async function getCategories(){
+    try {
+      const res = await fetch('http://localhost:8000/api/categories')
+      if(!res.ok){
+        const err = await res.json()
+        throw new Error(err.message || `Failed to fetch categories: ${res.status} ${res.statusText}`)
       }
+      const data = await res.json()
+      setCategories(data)
+    } catch (error) {
+      console.error(error)
     }
+  }
+
+  useEffect(() => {
     getCategories()
-  }, [bookmarks.length])
+  }, [])
 
   const closeForm = () => setShowBookmarkForm(false)
   const openForm = () => setShowBookmarkForm(true)
 
   function handleBookmarkAdd(newBookmark){
     setBookmarks(prev => [newBookmark, ...prev])
+    getCategories()
+  }
+
+  function handleBookmarkDelete(id){
+    setBookmarks(prev => prev.filter(item => item._id !== id))
+    getCategories()
   }
 
   function handleSelectedTags(value, checked){
@@ -68,6 +75,7 @@ const App = () => {
             onTagSelect={handleSelectedTags} 
           />
           <Feed
+            onBookmarkDelete={handleBookmarkDelete}
             searchInput={searchInput} 
             selectedTags={selectedTags} 
             setBookmarks={setBookmarks} 

@@ -4,7 +4,7 @@ import Logo from "./subcomponents/Logo"
 import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react'
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 
-const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
+const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDelete }) => {
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -39,7 +39,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
         if (error instanceof TypeError && error.message === "Failed to fetch") {
           setError("Server is unreachable.")
         } else {
-          console.log(error)
+          console.error(error)
           setError(error.message)
         }
       } finally {
@@ -59,21 +59,25 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
     return () => clearTimeout(timer)
   }, [message])
 
-  async function deleteBookmark(id){
+  async function handleDelete(){
+    if(!selectedId) return
+
+    setMessage(null)
     try {
-      const res = await fetch(`http://localhost:8000/api/bookmark/${id}`, {
+      const res = await fetch(`http://localhost:8000/api/bookmark/${selectedId}`, {
         method: 'DELETE'
       })
       const data = await res.json()
       if(!res.ok){
-        return { success: false, data }
+        setMessage({ success: false, text: data.message })
+        return
       }
-      return { success: true, data }
+      setMessage({ success: true, text: data.message })
+      onBookmarkDelete(selectedId)
     } catch (error) {
-      console.log(error)
-      return { success: false, data: { message: 'Network error' } }
+      console.error(error)
+      setMessage({ success: false, text: 'Network error' })
     } finally {
-      setSelectedId(null)
       handleClose()
     }
   }
@@ -83,24 +87,9 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
   }
 
   function handleOpenDeleteDialog(id){
-    console.log(id)
     setOpenDeleteDialog(true)
     setSelectedId(id)
   } 
-
-  async function handleDelete(){
-    if(!selectedId) return
-
-    const result = await deleteBookmark(selectedId)
-
-    if(!result.success){
-      setMessage(result)
-      return
-    }
-
-    setBookmarks(prev => prev.filter(item => item._id !== selectedId))
-    setMessage(result)
-  }
 
   function handleClose(){
     setOpenDeleteDialog(false)
@@ -114,7 +103,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
         <h1 className="text-lg font-bold">All bookmarks</h1>
         {
           message && 
-          <span className={`text-sm ${message.success ? 'text-success' : 'text-error'}`}>{message.data.message}</span>
+          <span className={`text-sm ${message.success ? 'text-success' : 'text-error'}`}>{message.text}</span>
         }
       </div>
 
@@ -140,7 +129,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks }) => {
               return (
                 <article key={item._id}>
                   <div className="flex items-center gap-4 p-4">
-                    {/* <Logo domain={item.domain} /> */}
+                    <Logo domain={item.domain} />
                     <div>
                       <h2 className="font-bold text-lg">{item.title}</h2>
                       <span className="text-xs text-text-secondary">{item.domain}</span>
