@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react"
-import { nanoid } from 'nanoid'
+import { useEffect, useState, useRef } from "react"
 import Logo from "./subcomponents/Logo"
 import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react'
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
@@ -12,6 +11,18 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
   const [message, setMessage] = useState(null)
+
+  const optionsRef = useRef(null)
+
+  useEffect(() => {
+    function handleOutsideClick(e) {
+      if (optionsRef.current && !optionsRef.current.contains(e.target)) {
+        setOpenId(null)
+      }
+    }
+    document.addEventListener("click", handleOutsideClick)
+    return () => document.removeEventListener("click", handleOutsideClick)
+  }, [])
 
   const params = new URLSearchParams()
   
@@ -97,6 +108,11 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
     setOpenId(null)
   }
 
+  function handleEditClick(id){
+    onOpen(id)
+    setOpenId(null)
+  }
+
   return (
     <main>
       <div className="flex items-center gap-10">
@@ -127,14 +143,16 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
                 const createdAt = `${createdDate} ${createdMonth}`
 
               return (
-                <article key={item._id}>
+                <article ref={openId === item._id ? optionsRef : null} key={item._id}>
                   <div className="flex items-center gap-4 p-4">
                     <Logo domain={item.domain} />
                     <div>
                       <h2 className="font-bold text-lg">{item.title}</h2>
                       <span className="text-xs text-text-secondary">{item.domain}</span>
                     </div>
-                    <button onClick={() => handleToggle(item._id)} type="button" className="modify-btn">
+                    <button 
+                      onClick={() => handleToggle(item._id)} type="button" className="modify-btn"
+                    >
                       <EllipsisVerticalIcon size={20} />
                     </button>
                     {
@@ -143,7 +161,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
                           <button 
                             type="button" 
                             className="edit-btn"
-                            onClick={() => onOpen(item._id)}
+                            onClick={() => handleEditClick(item._id)}
                           >
                             <PencilIcon size={14} />
                             Edit 
@@ -165,7 +183,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
                     <p className="pt-4 ext-sm text-text-secondary border-t border-t-border">{item.description}</p>
                     <div className="py-4 flex items-center mt-auto gap-2">
                       {
-                        item.category.map(tag => <span key={nanoid()} className="tags">{tag}</span>)
+                        item.category.map(tag => <span key={tag} className="tags">{tag}</span>)
                       }
                     </div>
                   </div>

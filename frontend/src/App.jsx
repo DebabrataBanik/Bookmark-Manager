@@ -74,7 +74,10 @@ const App = () => {
   return (
     <div className="wrapper">
 
-      <div className={`flex flex-col grow ${showBookmarkForm ? 'blur-sm pointer-events-none select-none' : ''}`}>
+      <div
+        inert={showBookmarkForm} 
+        className={`flex flex-col grow ${showBookmarkForm ? 'blur-sm pointer-events-none select-none' : ''}`}
+      >
 
         <Header 
           onOpen={openForm} 
