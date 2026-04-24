@@ -94,3 +94,58 @@ export async function deleteBookmark(req, res){
     res.status(500).json({ message: error.message })
   }
 }
+
+export async function updateBookmark(req, res){
+  try {
+    const { id }  = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid ID format' })
+    }
+
+    const result = bookmarkSchema.safeParse(req.body)
+
+    if(!result.success){
+      const formatted = result.error.flatten().fieldErrors
+      return res.status(400).json(formatted)
+    }
+
+    let { url, title, description, category } = result.data
+
+    const scrapeRes = await scrape(url)
+
+    if(!scrapeRes.success){
+      return res.status(500).json({ message: "Could not scrape data for that url" })
+    }
+    
+    const metadata = scrapeRes.metadata
+
+    const bookmarkData = {
+      url, 
+      title, 
+      description: description || metadata.description || '',
+      publisher: metadata.publisher || '',
+      author: metadata.author || '',
+      domain: new URL(url).hostname.replace(/^www\./, ''),
+      date: metadata.date || new Date().toISOString(),
+      category
+    }
+
+    const updatedBookmark = await Bookmark.findOneAndUpdate({ _id: id }, bookmarkData, { returnDocument: 'after', runValidators: true })
+
+    console.log(updatedBookmark)
+
+    if (!updatedBookmark) {
+      return res.status(404).json({
+        message: 'Bookmark not found'
+      })
+    }
+
+    res.status(200).json({ message: 'Bookmark successfully updated', data: updatedBookmark })
+
+
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: error.message })
+  }
+}

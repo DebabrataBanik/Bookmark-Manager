@@ -4,7 +4,7 @@ import Logo from "./subcomponents/Logo"
 import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react'
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 
-const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDelete }) => {
+const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDelete, onOpen }) => {
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -143,6 +143,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
                           <button 
                             type="button" 
                             className="edit-btn"
+                            onClick={() => onOpen(item._id)}
                           >
                             <PencilIcon size={14} />
                             Edit 

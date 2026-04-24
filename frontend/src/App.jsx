@@ -11,6 +11,7 @@ const App = () => {
   const [selectedTags, setSelectedTags] = useState([])
   const [searchInput, setSearchInput] = useState('')
   const [categories, setCategories] = useState([])
+  const [bookmarkData, setBookmarkData] = useState(null)
 
   async function getCategories(){
     try {
@@ -30,8 +31,22 @@ const App = () => {
     getCategories()
   }, [])
 
-  const closeForm = () => setShowBookmarkForm(false)
-  const openForm = () => setShowBookmarkForm(true)
+  const closeForm = () => {
+    setBookmarkData(null)
+    setShowBookmarkForm(false)
+  }
+  const openForm = (id) => {
+    if(id) {
+      const existingBookmark = bookmarks.find(b => b._id === id)
+      setBookmarkData(existingBookmark)
+    }
+    setShowBookmarkForm(true)
+  }
+
+  function handleBookmarkUpdate(updatedBookmark){
+    setBookmarks(prev => prev.map(item => item._id === updatedBookmark._id ? updatedBookmark : item))
+    getCategories()
+  }
 
   function handleBookmarkAdd(newBookmark){
     setBookmarks(prev => [newBookmark, ...prev])
@@ -75,6 +90,7 @@ const App = () => {
             onTagSelect={handleSelectedTags} 
           />
           <Feed
+            onOpen={openForm}
             onBookmarkDelete={handleBookmarkDelete}
             searchInput={searchInput} 
             selectedTags={selectedTags} 
@@ -85,7 +101,7 @@ const App = () => {
         </div>
       </div>
       {
-        showBookmarkForm && <BookmarkForm onClose={closeForm} onBookmarkAdd={handleBookmarkAdd} />
+        showBookmarkForm && <BookmarkForm bookmarkData={bookmarkData} onClose={closeForm} onBookmarkAdd={handleBookmarkAdd} onBookmarkUpdate={handleBookmarkUpdate} />
       }
     </div>
   )

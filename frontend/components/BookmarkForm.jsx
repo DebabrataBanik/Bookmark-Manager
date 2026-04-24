@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react"
 import validator from 'validator'
 
-const BookmarkForm = ({ onClose, onBookmarkAdd }) => {
-  const [formData, setFormData] = useState({
-    url: '',
-    title: '',
-    description: '',
-    category: ''
+const BookmarkForm = ({ onClose, onBookmarkAdd, bookmarkData, onBookmarkUpdate }) => {
+  const [formData, setFormData] = useState(() => {
+    return {
+      url: bookmarkData?.url || '',
+      title: bookmarkData?.title || '',
+      description: bookmarkData?.description || '',
+      category: bookmarkData?.category?.join(',') || ''
+    }
   })
   const [error, setError] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -21,6 +23,72 @@ const BookmarkForm = ({ onClose, onBookmarkAdd }) => {
 
     return () => clearTimeout(timer)
   }, [message])
+  
+  async function addBookmark(data){
+    try {
+      setError(null)
+      const res = await fetch('http://localhost:8000/api/add', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+
+      if(!res.ok){
+        const err = await res.json()
+        setError(err)
+        return
+      }
+      const result = await res.json()
+      setMessage(result.message)
+      setFormData({ url: '',
+        title: '',
+        description: '',
+        category: ''
+      })
+      onBookmarkAdd(result.data)
+
+    } catch (error) {
+      console.error(error)
+      setError({ message: error.message })
+    } finally{
+      setIsSubmitting(false)
+    }
+  }
+
+  async function updateBookmark(data){
+    try {
+      setError(null)
+      const res = await fetch(`http://localhost:8000/api/bookmark/${bookmarkData._id}`, {
+        method: 'PUT',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+
+      if(!res.ok){
+        const err = await res.json()
+        setError(err)
+        return
+      }
+      const result = await res.json()
+      setMessage(result.message)
+      setFormData({ url: '',
+        title: '',
+        description: '',
+        category: ''
+      })
+      onBookmarkUpdate(result.data)
+
+    } catch (error) {
+      console.error(error)
+      setError({ message: error.message })
+    } finally{
+      setIsSubmitting(false)
+    }
+  }
 
   async function handleSubmit(e){
     e.preventDefault()
@@ -54,36 +122,11 @@ const BookmarkForm = ({ onClose, onBookmarkAdd }) => {
       url
     }
     
-    try {
-      setError(null)
-      const res = await fetch('http://localhost:8000/api/add', {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(validData)
-      })
-
-      if(!res.ok){
-        const err = await res.json()
-        setError(err)
-        return
-      }
-      const result = await res.json()
-      setMessage(result.message)
-      setFormData({ url: '',
-        title: '',
-        description: '',
-        category: ''
-      })
-      onBookmarkAdd(result.data)
-
-    } catch (error) {
-      console.error(error)
-      setError({ message: error.message })
-    } finally{
-      setIsSubmitting(false)
+    if(bookmarkData){
+      await updateBookmark(validData)
+      return
     }
+    await addBookmark(validData)
   }
 
   function handleChange(e){
@@ -98,6 +141,10 @@ const BookmarkForm = ({ onClose, onBookmarkAdd }) => {
       [name]: ''
     }))
   }
+
+  const btnText = isSubmitting
+  ? (bookmarkData ? 'Updating...' : 'Adding...')
+  : (bookmarkData ? 'Update' : 'Add')
 
   return (
     <div className="form-wrapper">
@@ -187,7 +234,7 @@ const BookmarkForm = ({ onClose, onBookmarkAdd }) => {
             className="btn submit-btn"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Adding...' : 'Add'}
+            {btnText}
           </button>
         </div>
         
