@@ -19,11 +19,12 @@ const BookmarkForm = ({ onClose, onBookmarkAdd, bookmarkData, onBookmarkUpdate }
 
     const timer = setTimeout(() => {
       setMessage(null)
+      onClose()
     }, 3000)
 
     return () => clearTimeout(timer)
-  }, [message])
-  
+  }, [message, onClose])
+
   async function addBookmark(data){
     try {
       setError(null)
