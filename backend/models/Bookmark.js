@@ -9,7 +9,8 @@ const bookmarkSchema = new mongoose.Schema(
     author: String,
     domain: String,
     date: String,
-    category: [String]
+    category: [String],
+    pinned: { type: Boolean, default: false }
   },
   { timestamps: true }
 )

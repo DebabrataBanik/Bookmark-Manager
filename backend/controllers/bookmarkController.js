@@ -147,3 +147,26 @@ export async function updateBookmark(req, res){
     res.status(500).json({ message: error.message })
   }
 }
+
+export async function pinBookmark(req, res){
+  try {
+    const { id } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid ID format' })
+    }
+
+    const existingBookmark = await Bookmark.findById(id)
+    if(!existingBookmark){
+      return res.status(404).json({ message: 'No bookmark found'})
+    }
+    existingBookmark.pinned = !existingBookmark.pinned
+    const updatedBookmark = await existingBookmark.save()
+
+    res.status(200).json(updatedBookmark)
+
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: error.message })
+  }
+}

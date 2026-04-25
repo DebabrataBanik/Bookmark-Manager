@@ -11,7 +11,6 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
   const [message, setMessage] = useState(null)
-  const [pinnedBookmarks, setPinnedBookmarks] = useState([])
 
   const optionsRef = useRef(null)
 
@@ -70,6 +69,22 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
 
     return () => clearTimeout(timer)
   }, [message])
+
+  async function pinBookmark(id){
+    try {
+      const res = await fetch(`http://localhost:8000/api/bookmark/${id}`, {
+        method: 'PATCH'
+      })
+      const data = await res.json()
+      if(!res.ok){
+        throw Error(data.message || `Error : ${res.status} ${res.statusText}`)
+      }
+      setBookmarks(prev => prev.map(item => item._id === data._id ? data : item))
+
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   async function handleDelete(){
     if(!selectedId) return
@@ -190,20 +205,20 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
                   </div>
                   <div className="article-footer">
                     <div className="flex items-center gap-5">
-                      <span className="stat">
+                      <span title="View count" className="stat">
                         <EyeIcon size={12} />
                         1
                       </span>
-                      <span className="stat">
+                      <span title="Last visited" className="stat">
                         <Clock4Icon size={12} />
                         12 Jan
                       </span>
-                      <span className="stat">
+                      <span title="Date Added" className="stat">
                         <CalendarIcon size={12} />
                         {createdAt}
                       </span>
                     </div>
-                    <button type="button"><PinIcon size={15} /></button>
+                    <button onClick={() => pinBookmark(item._id)} title="Pin" type="button"><PinIcon className={item.pinned ? 'pinned' : ''} size={15} /></button>
                   </div>
                 </article>
               )})
