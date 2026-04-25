@@ -133,8 +133,6 @@ export async function updateBookmark(req, res){
 
     const updatedBookmark = await Bookmark.findOneAndUpdate({ _id: id }, bookmarkData, { returnDocument: 'after', runValidators: true })
 
-    console.log(updatedBookmark)
-
     if (!updatedBookmark) {
       return res.status(404).json({
         message: 'Bookmark not found'

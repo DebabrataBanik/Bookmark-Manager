@@ -11,6 +11,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
   const [message, setMessage] = useState(null)
+  const [pinnedBookmarks, setPinnedBookmarks] = useState([])
 
   const optionsRef = useRef(null)
 
