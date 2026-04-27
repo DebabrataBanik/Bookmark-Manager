@@ -1,14 +1,30 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { getDate } from "../utils/getDate"
 import Logo from "./subcomponents/Logo"
-import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon, ClipboardCopyIcon, ArchiveIcon, ExternalLinkIcon } from 'lucide-react'
+import { EyeIcon, Clock4Icon, CalendarIcon, EllipsisVerticalIcon, TrashIcon, ArchiveRestoreIcon } from 'lucide-react'
+import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 
 
-const Archive = () => {
+const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, bookmarks }) => {
 
   const [archivedBookmarks, setArchivedBookmarks] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [openId, setOpenId] = useState(null)
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
+  const [message, setMessage] = useState(null)
+
+  const optionsRef = useRef(null)
+
+  useEffect(() => {
+    function handleOutsideClick(e) {
+      if (optionsRef.current && !optionsRef.current.contains(e.target)) {
+        setOpenId(null)
+      }
+    }
+    document.addEventListener("click", handleOutsideClick)
+    return () => document.removeEventListener("click", handleOutsideClick)
+  }, [])
 
   useEffect(() => {
     async function getArchives(){
@@ -32,12 +48,79 @@ const Archive = () => {
       }
     }
     getArchives()
-  }, [])
+  }, [bookmarks])
+
+  useEffect(() => {
+    if(!message) return
+
+    const timer = setTimeout(() => {
+      setMessage(null)
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [message])
+
+  async function restoreBookmark(id){
+    try {
+      const res = await fetch(`http://localhost:8000/api/bookmark/archive/${id}`, {
+        method: 'PATCH'
+      })
+      const data = await res.json()
+      if(!res.ok){
+        throw Error(data.message || `Error: ${res.status} ${res.statusText}`)
+      }
+      setBookmarks(prev => prev.map(item => item._id === data._id ? data : item))
+      await getCategories()
+
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  async function handleDelete(){
+    if(!openId) return
+
+    setMessage(null)
+    try {
+      const res = await fetch(`http://localhost:8000/api/bookmark/${openId}`, {
+        method: 'DELETE'
+      })
+      const data = await res.json()
+      if(!res.ok){
+        setMessage({ success: false, text: data.message })
+        return
+      }
+      setMessage({ success: true, text: data.message })
+      onBookmarkDelete(openId)
+    } catch (error) {
+      console.error(error)
+      setMessage({ success: false, text: 'Network error' })
+    } finally {
+      handleClose()
+    }
+  }
+
+  function handleClose(){
+    setOpenDeleteDialog(false)
+    setOpenId(null)
+  }
+
+  function handleToggle(id){
+    setOpenId(prev => prev === id ? null : id)
+  }
+
+  function handleOpenDeleteDialog(){
+    setOpenDeleteDialog(true)
+  } 
 
   return (
     <main>
       <div className="flex items-center gap-10">
         <h1 className="text-lg font-bold">Your Archive</h1>
+        {
+          message && 
+          <span className={`text-sm ${message.success ? 'text-success' : 'text-error'}`}>{message.text}</span>
+        }
       </div>
 
       <section className="bookmarks-container">
@@ -58,14 +141,41 @@ const Archive = () => {
                 const lastVisited = getDate(item.lastVisited)
 
               return (
-                <article key={item._id}>
+                <article ref={openId === item._id ? optionsRef : null} key={item._id}>
                   <div className="flex items-center gap-4 p-4">
                     <Logo domain={item.domain} />
                     <div>
                       <h2 className="font-bold text-lg">{item.title}</h2>
                       <span className="text-xs text-text-secondary">{item.domain}</span>
                     </div>
-                    
+                    <button 
+                      onClick={() => handleToggle(item._id)} type="button" className="modify-btn"
+                    >
+                      <EllipsisVerticalIcon size={20} />
+                    </button>
+                    {
+                      openId === item._id && (
+                        <div className='options p-1 gap-1'>
+                            <button
+                              type="button"
+                              className="visit-btn"
+                              onClick={() => restoreBookmark(item._id)}
+                            >
+                              <ArchiveRestoreIcon size={12} />
+                              Restore
+                            </button>
+                            <button 
+                              type="button" 
+                              className="delete-btn"
+                              onClick={handleOpenDeleteDialog}
+                              >
+                              <TrashIcon size={12} /> 
+                              Delete 
+                            </button>
+                        </div>
+                      )
+                    }
+
                   </div>
                   <div className="px-4 text-sm">
                     <p className="pt-4 ext-sm text-text-secondary border-t border-t-border">{item.description}</p>
@@ -90,7 +200,6 @@ const Archive = () => {
                         {dateAdded}
                       </span>
                     </div>
-                    
                   </div>
                 </article>
               )})
@@ -98,7 +207,13 @@ const Archive = () => {
           )
         }
       </section>
-      
+      {
+        openDeleteDialog && (
+          <ConfirmDeleteDialog onDelete={handleDelete} onClose={handleClose}>
+            Are you sure you want to delete this bookmark.
+          </ConfirmDeleteDialog>
+        )
+      }
     </main>
   )
 }

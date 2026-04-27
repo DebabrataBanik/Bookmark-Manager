@@ -231,6 +231,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
                               type="button"
                               className="visit-btn"
                               onClick={() => handleVisit(item.url)}
+                              aria-label={`Visit ${item.domain}`}
                             >
                               <ExternalLinkIcon size={12} />
                               Open Link
@@ -241,7 +242,6 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
                               type="button" 
                               className="delete-btn"
                               onClick={() => handleOpenDeleteDialog(item._id)}
-                              aria-label={`Visit ${item.domain}`}
                               >
                               <TrashIcon size={12} /> 
                               Delete 
@@ -298,7 +298,11 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
         }
       </section>
       {
-        openDeleteDialog && <ConfirmDeleteDialog onDelete={handleDelete} onClose={handleClose} />
+        openDeleteDialog && ( 
+          <ConfirmDeleteDialog onDelete={handleDelete} onClose={handleClose}>
+            This will permanently delete this bookmark. You can archive this instead of deleting.
+          </ConfirmDeleteDialog>
+        ) 
       }
     </main>
   )

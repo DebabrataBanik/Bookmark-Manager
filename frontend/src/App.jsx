@@ -116,7 +116,7 @@ const App = () => {
               getCategories={getCategories}
             /> 
             :
-            <Archive />
+            <Archive getCategories={getCategories} onBookmarkDelete={handleBookmarkDelete} setBookmarks={setBookmarks} bookmarks={bookmarks} />
           }
 
         </div>

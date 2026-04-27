@@ -1,6 +1,6 @@
 import { Trash2Icon } from 'lucide-react'
 
-const ConfirmDeleteDialog = ({ onClose, onDelete }) => {
+const ConfirmDeleteDialog = ({ children, onClose, onDelete }) => {
   return (
     <div className="delete-dialog-wrapper">
       <div className="dialog-container">
@@ -10,7 +10,7 @@ const ConfirmDeleteDialog = ({ onClose, onDelete }) => {
         </div>
 
         <h2 className='font-semibold text-center pt-1'>Delete Bookmark?</h2>
-        <p className='text-sm text-center px-7'>This will permanently delete this bookmark. You can archive this instead of deleting.</p>
+        <p className='text-sm text-center px-7'>{children}</p>
 
         <div className='btn-container'>
           <button onClick={onClose} type='button' className='cancel'>Cancel</button>
