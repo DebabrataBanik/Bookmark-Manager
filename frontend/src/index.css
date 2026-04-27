@@ -397,47 +397,53 @@ input[type="search"]::-ms-reveal {
     position: absolute;
     right: 1rem;
     top: 3rem;
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
     align-items: start;
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
     background-color: var(--color-bg-primary);
-    padding: 0.25rem;
 
     &:hover{
       border: 1px solid var(--color-border);
     }
   }
 
-  .edit-btn, .delete-btn{
+  .edit-btn, .delete-btn, .copy-btn{
     color: var(--color-text-secondary);
     width: 100%;
-    padding: 0.325rem;
     border-radius: var(--radius-sm);
-    padding-inline: 0.5rem 1.5rem;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
     text-align: left;
     display: flex;
     align-items: center;
     gap: 0.5rem;
   }
-
-  .edit-btn{
-    color: var(--color-accent);
+  
+  .edit-btn, .copy-btn{
+    color: var(--color-text-primary);
+    padding: 0.35rem;
+    padding-inline: 0.5rem 2rem;
 
     &:hover{
+      color: var(--color-accent);
       background-color: var(--color-accent-subtle);
     }
   }
 
+  .copy-btn{
+    padding-right: 0;
+    width: 100%;
+  }
+
   .delete-btn{
     color: var(--color-error);
+    padding-inline: 0.5rem 2rem;
+    padding-block: 0.375rem; 
 
     &:hover{
-      background-color: #dc262610;
+      background-color: #dc262620;
     }
 
     &:focus-visible{

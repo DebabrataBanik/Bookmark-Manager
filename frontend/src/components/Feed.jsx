@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react"
 import Logo from "./subcomponents/Logo"
-import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react'
+import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon, ClipboardCopyIcon } from 'lucide-react'
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 
 const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDelete, onOpen }) => {
@@ -11,6 +11,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
   const [message, setMessage] = useState(null)
+  const [copied, setCopied] = useState(false)
 
   const optionsRef = useRef(null)
 
@@ -129,6 +130,17 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
     setOpenId(null)
   }
 
+  async function handleCopyUrltoClipboard(url){
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy URL: ', error)
+    }
+  }
+
   return (
     <main>
       <div className="flex items-center gap-10">
@@ -174,22 +186,36 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
                     {
                       openId === item._id && (
                         <div className='options'>
-                          <button 
-                            type="button" 
-                            className="edit-btn"
-                            onClick={() => handleEditClick(item._id)}
-                          >
-                            <PencilIcon size={14} />
-                            Edit 
-                          </button>
-                          <button 
-                            type="button" 
-                            className="delete-btn"
-                            onClick={() => handleOpenDeleteDialog(item._id)}
-                          >
-                            <TrashIcon size={14} /> 
-                            Delete 
-                          </button>
+                          <div className="w-full p-1 border-b border-b-border flex flex-col gap-0.5">
+                            <button 
+                              type="button" 
+                              className="edit-btn"
+                              onClick={() => handleEditClick(item._id)}
+                            >
+                              <PencilIcon size={12} />
+                              Edit 
+                            </button>
+                            <button
+                              type="button"
+                              className="copy-btn"
+                              onClick={() => handleCopyUrltoClipboard(item.url)}
+                            >
+                              <ClipboardCopyIcon size={12} />
+                              {
+                                copied ? 'Copied' : 'Copy'
+                              }
+                            </button>
+                          </div>
+                          <div className="p-1 w-full">
+                            <button 
+                              type="button" 
+                              className="delete-btn"
+                              onClick={() => handleOpenDeleteDialog(item._id)}
+                              >
+                              <TrashIcon size={12} /> 
+                              Delete 
+                            </button>
+                          </div>
                         </div>
                       )
                     }
