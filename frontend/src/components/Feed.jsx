@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react"
 import Logo from "./subcomponents/Logo"
 import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon, ClipboardCopyIcon, ArchiveIcon, ExternalLinkIcon } from 'lucide-react'
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
+import { getDate } from "../utils/getDate"
 
 const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDelete, onOpen }) => {
 
@@ -169,10 +170,8 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
             :
             (
               bookmarks.map(item => { 
-                const date = new Date(item.createdAt)
-                const createdDate = date.getDate()
-                const createdMonth = date.toLocaleString('default', { month: 'short' })
-                const createdAt = `${createdDate} ${createdMonth}`
+                const dateAdded = getDate(item.createdAt)
+                const lastVisited = getDate(item.lastVisited)
 
               return (
                 <article ref={openId === item._id ? optionsRef : null} key={item._id}>
@@ -246,19 +245,18 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
                     <div className="flex items-center gap-5">
                       <span title="View count" className="stat">
                         <EyeIcon size={12} />
-                        1
+                        {item.count}
                       </span>
                       <span title="Last visited" className="stat">
                         <Clock4Icon size={12} />
-                        12 Jan
+                        {lastVisited}
                       </span>
                       <span title="Date Added" className="stat">
                         <CalendarIcon size={12} />
-                        {createdAt}
+                        {dateAdded}
                       </span>
                     </div>
-                    <div className="flex gap-3 items-center">
-                      
+                    <div className="flex gap-3 items-start">
                       <button 
                         onClick={() => pinBookmark(item._id)} 
                         title="Pin" 
