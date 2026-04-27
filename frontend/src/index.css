@@ -381,7 +381,7 @@ input[type="search"]::-ms-reveal {
 
   .article-footer .stat{
     display: flex;
-    align-items: end;
+    align-items: center;
     gap: 0.325rem;
   }
 
@@ -410,7 +410,7 @@ input[type="search"]::-ms-reveal {
     }
   }
 
-  .edit-btn, .delete-btn, .copy-btn{
+  .edit-btn, .delete-btn, .copy-btn, .visit-btn{
     color: var(--color-text-secondary);
     width: 100%;
     border-radius: var(--radius-sm);
@@ -421,7 +421,7 @@ input[type="search"]::-ms-reveal {
     gap: 0.5rem;
   }
   
-  .edit-btn, .copy-btn{
+  .edit-btn, .copy-btn, .visit-btn{
     color: var(--color-text-primary);
     padding: 0.35rem;
     padding-inline: 0.5rem 2rem;

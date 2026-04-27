@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react"
 import Logo from "./subcomponents/Logo"
-import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon, ClipboardCopyIcon } from 'lucide-react'
+import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon, ClipboardCopyIcon, ArchiveIcon, ExternalLinkIcon } from 'lucide-react'
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 
 const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDelete, onOpen }) => {
@@ -141,6 +141,10 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
     }
   }
 
+  function handleVisit(url){
+    window.open(url, '_blank', 'noreferrer')
+  }
+
   return (
     <main>
       <div className="flex items-center gap-10">
@@ -202,8 +206,16 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
                             >
                               <ClipboardCopyIcon size={12} />
                               {
-                                copied ? 'Copied' : 'Copy'
+                                copied ? 'Copied' : 'Copy Url'
                               }
+                            </button>
+                            <button
+                              type="button"
+                              className="visit-btn"
+                              onClick={() => handleVisit(item.url)}
+                            >
+                              <ExternalLinkIcon size={12} />
+                              Open Link
                             </button>
                           </div>
                           <div className="p-1 w-full">
@@ -211,6 +223,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
                               type="button" 
                               className="delete-btn"
                               onClick={() => handleOpenDeleteDialog(item._id)}
+                              aria-label={`Visit ${item.domain}`}
                               >
                               <TrashIcon size={12} /> 
                               Delete 
@@ -244,7 +257,16 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
                         {createdAt}
                       </span>
                     </div>
-                    <button onClick={() => pinBookmark(item._id)} title="Pin" type="button"><PinIcon className={item.pinned ? 'pinned' : ''} size={15} /></button>
+                    <div className="flex gap-3 items-center">
+                      
+                      <button 
+                        onClick={() => pinBookmark(item._id)} 
+                        title="Pin" 
+                        type="button"
+                      >
+                        <PinIcon className={item.pinned ? 'pinned' : ''} size={15} />
+                      </button>
+                    </div>
                   </div>
                 </article>
               )})
