@@ -14,6 +14,7 @@ const App = () => {
   const [categories, setCategories] = useState([])
   const [bookmarkData, setBookmarkData] = useState(null)
   const [contentPage, setContentPage] = useState('home')
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
 
   async function getCategories(){
     try {
@@ -84,7 +85,7 @@ const App = () => {
     <div className="wrapper">
 
       <div
-        inert={showBookmarkForm} 
+        inert={showBookmarkForm || openDeleteDialog} 
         className={`flex flex-col grow ${showBookmarkForm ? 'blur-sm pointer-events-none select-none' : ''}`}
       >
 
@@ -114,9 +115,18 @@ const App = () => {
               setBookmarks={setBookmarks} 
               bookmarks={bookmarks}
               getCategories={getCategories}
+              openDeleteDialog={openDeleteDialog}
+              setOpenDeleteDialog={setOpenDeleteDialog}
             /> 
             :
-            <Archive getCategories={getCategories} onBookmarkDelete={handleBookmarkDelete} setBookmarks={setBookmarks} bookmarks={bookmarks} />
+            <Archive 
+              getCategories={getCategories} 
+              onBookmarkDelete={handleBookmarkDelete} 
+              setBookmarks={setBookmarks} 
+              bookmarks={bookmarks} 
+              openDeleteDialog={openDeleteDialog}
+              setOpenDeleteDialog={setOpenDeleteDialog}
+            />
           }
 
         </div>

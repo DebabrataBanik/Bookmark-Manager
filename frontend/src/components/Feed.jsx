@@ -4,12 +4,11 @@ import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, Penci
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 import { getDate } from "../utils/getDate"
 
-const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDelete, onOpen, getCategories }) => {
+const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDelete, onOpen, getCategories, openDeleteDialog, setOpenDeleteDialog }) => {
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [openId, setOpenId] = useState(null)
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
   const [message, setMessage] = useState(null)
   const [copied, setCopied] = useState(false)
@@ -191,6 +190,12 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
           message && 
           <span className={`text-sm ${message.success ? 'text-success' : 'text-error'}`}>{message.text}</span>
         }
+        <select className="select-sort" aria-label="Sort Bookmarks" name="sort" id="sort">
+          <option defaultChecked>Sort</option>
+          <option value="add">Recently added</option>
+          <option value="visit">Recently visited</option>
+          <option value="most">Most visited</option>
+        </select>
       </div>
 
       <section className="bookmarks-container">

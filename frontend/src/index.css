@@ -510,6 +510,10 @@ input[type="search"]::-ms-reveal {
     &:hover{
       background-color: #dc262630;
     }
+
+    &:focus-visible{
+      outline: 1px solid var(--color-error);
+    }
   }
 
   .cancel{

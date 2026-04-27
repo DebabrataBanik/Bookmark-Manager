@@ -5,13 +5,12 @@ import { EyeIcon, Clock4Icon, CalendarIcon, EllipsisVerticalIcon, TrashIcon, Arc
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 
 
-const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, bookmarks }) => {
+const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, bookmarks, openDeleteDialog, setOpenDeleteDialog }) => {
 
   const [archivedBookmarks, setArchivedBookmarks] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [openId, setOpenId] = useState(null)
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const [message, setMessage] = useState(null)
 
   const optionsRef = useRef(null)
