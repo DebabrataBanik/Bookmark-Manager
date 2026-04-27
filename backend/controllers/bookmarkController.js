@@ -171,6 +171,32 @@ export async function pinBookmark(req, res){
   }
 }
 
+export async function updateBookmarkOnVisit(req, res){
+  try {
+    const { id } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid ID format' })
+    }
+
+    const updatedBookmark = await Bookmark.findByIdAndUpdate(id, {
+        $inc: {count: 1},
+        $set: {lastVisited: new Date()}
+      },
+      { returnDocument: 'after', runValidators: true }
+    )
+    if(!updatedBookmark){
+      return res.status(404).json({ message: 'No bookmark found' })
+    }
+
+    res.json(updatedBookmark)
+
+  } catch (error) {
+    console.log(error)
+    res.status(500).status({ message: error.message })
+  }
+}
+
 export async function archiveBookmark(req, res){
   try {
     const { id } = req.params

@@ -159,8 +159,26 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
     }
   }
 
-  function handleVisit(url){
+  async function updateBookmarkOnVisit(id){
+    try {
+      const res = await fetch(`http://localhost:8000/api/bookmark/${id}/visit`, {
+        method: 'PATCH'
+      })
+      const data = await res.json()
+      if(!res.ok){
+        throw new Error(data.message || `Error: ${res.status} ${res.statusText}`)
+      }
+      setBookmarks(prev => prev.map(b => b._id === data._id ? data : b))
+
+    } catch (error) {
+      console.error(error)
+      setError(error.message)
+    }
+  }
+
+  function handleVisit(url, id){
     window.open(url, '_blank', 'noreferrer')
+    updateBookmarkOnVisit(id)
   }
 
   const displayBookmarks = bookmarks.filter(b => !b.archived)
@@ -230,7 +248,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
                             <button
                               type="button"
                               className="visit-btn"
-                              onClick={() => handleVisit(item.url)}
+                              onClick={() => handleVisit(item.url, item._id)}
                               aria-label={`Visit ${item.domain}`}
                             >
                               <ExternalLinkIcon size={12} />
