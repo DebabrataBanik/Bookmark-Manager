@@ -4,7 +4,7 @@ import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, Penci
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 import { getDate } from "../utils/getDate"
 
-const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDelete, onOpen }) => {
+const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDelete, onOpen, getCategories }) => {
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -88,6 +88,23 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
     }
   }
 
+  async function archiveBookmark(id){
+    try {
+      const res = await fetch(`http://localhost:8000/api/bookmark/archive/${id}`, {
+        method: 'PATCH'
+      })
+      const data = await res.json()
+      if(!res.ok){
+        throw Error(data.message || `Error: ${res.status} ${res.statusText}`)
+      }
+      setBookmarks(prev => prev.map(item => item._id === data._id ? data : item))
+      await getCategories()
+
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   async function handleDelete(){
     if(!selectedId) return
 
@@ -146,6 +163,8 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
     window.open(url, '_blank', 'noreferrer')
   }
 
+  const displayBookmarks = bookmarks.filter(b => !b.archived)
+
   return (
     <main>
       <div className="flex items-center gap-10">
@@ -166,10 +185,10 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
             <p className="text-sm text-error">{error}</p>
           :
           (
-            bookmarks.length === 0 ? <p className="text-sm text-text-tertiary">No bookmarks to show.</p>
+            displayBookmarks.length === 0 ? <p className="text-sm text-text-tertiary">No bookmarks to show.</p>
             :
             (
-              bookmarks.map(item => { 
+              displayBookmarks.map(item => { 
                 const dateAdded = getDate(item.createdAt)
                 const lastVisited = getDate(item.lastVisited)
 
@@ -257,6 +276,12 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
                       </span>
                     </div>
                     <div className="flex gap-3 items-start">
+                      <button
+                        title="Archive"
+                        onClick={() => archiveBookmark(item._id)}
+                      >
+                        <ArchiveIcon size={14} />
+                      </button>
                       <button 
                         onClick={() => pinBookmark(item._id)} 
                         title="Pin" 

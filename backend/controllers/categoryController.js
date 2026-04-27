@@ -3,6 +3,7 @@ import { Bookmark } from "../models/Bookmark.js"
 export async function getCategories(req, res){
   try {
     const categories = await Bookmark.aggregate([
+      { $match: { archived: false }},
       { $unwind: "$category"},
       { $group: { _id: "$category", count: { $sum : 1 }}},
       { $sort: { _id: 1 }}

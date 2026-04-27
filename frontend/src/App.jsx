@@ -2,6 +2,7 @@ import Header from "./components/Header"
 import Sidebar from "./components/Sidebar"
 import Feed from "./components/Feed"
 import BookmarkForm from "./components/BookmarkForm"
+import Archive from "./components/Archive"
 import { useState, useEffect } from "react"
 
 const App = () => {
@@ -12,6 +13,7 @@ const App = () => {
   const [searchInput, setSearchInput] = useState('')
   const [categories, setCategories] = useState([])
   const [bookmarkData, setBookmarkData] = useState(null)
+  const [contentPage, setContentPage] = useState('home')
 
   async function getCategories(){
     try {
@@ -71,6 +73,13 @@ const App = () => {
     setSearchInput(value)
   }
 
+  function goToArchive(){
+    setContentPage('archive')
+  }
+  function goToHome(){
+    setContentPage('home')
+  }
+
   return (
     <div className="wrapper">
 
@@ -91,15 +100,24 @@ const App = () => {
             categories={categories}
             selectedTags={selectedTags} 
             onTagSelect={handleSelectedTags} 
+            contentPage={contentPage}
+            onArchiveClick={goToArchive}
+            onHomeClick={goToHome}
           />
-          <Feed
-            onOpen={openForm}
-            onBookmarkDelete={handleBookmarkDelete}
-            searchInput={searchInput} 
-            selectedTags={selectedTags} 
-            setBookmarks={setBookmarks} 
-            bookmarks={bookmarks} 
-          />
+          {
+            contentPage === 'home' ?
+            <Feed
+              onOpen={openForm}
+              onBookmarkDelete={handleBookmarkDelete}
+              searchInput={searchInput} 
+              selectedTags={selectedTags} 
+              setBookmarks={setBookmarks} 
+              bookmarks={bookmarks}
+              getCategories={getCategories}
+            /> 
+            :
+            <Archive />
+          }
 
         </div>
       </div>
