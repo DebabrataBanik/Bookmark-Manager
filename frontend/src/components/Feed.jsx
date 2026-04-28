@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react"
 import Logo from "./subcomponents/Logo"
-import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon, ClipboardCopyIcon, ArchiveIcon, ExternalLinkIcon } from 'lucide-react'
+import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon, ClipboardCopyIcon, ArchiveIcon, ExternalLinkIcon, ArrowUpDownIcon } from 'lucide-react'
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 import { getDate } from "../utils/getDate"
 
@@ -12,6 +12,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
   const [selectedId, setSelectedId] = useState(null)
   const [message, setMessage] = useState(null)
   const [copied, setCopied] = useState(false)
+  const [sort, setSort] = useState('')
 
   const optionsRef = useRef(null)
 
@@ -25,17 +26,19 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
     return () => document.removeEventListener("click", handleOutsideClick)
   }, [])
 
-  const params = new URLSearchParams()
   
-  if(selectedTags.length > 0){
-    params.set('category', selectedTags.join(','))
-  }
-  if(searchInput.trim()){
-    params.set('search', searchInput.trim())
-  }
-  const url = `http://localhost:8000/api?${params.toString()}`
-
   useEffect(() => {
+    const params = new URLSearchParams()
+    if(selectedTags.length > 0){
+      params.set('category', selectedTags.join(','))
+    }
+    if(searchInput.trim()){
+      params.set('search', searchInput.trim())
+    }
+    if(sort){
+      params.set('sortBy', sort)
+    }
+    const url = `http://localhost:8000/api?${params.toString()}`
     async function getData(){ 
       setError(null)
       try {
@@ -59,7 +62,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
       }
     }
     getData()
-  }, [selectedTags, searchInput])
+  }, [selectedTags, searchInput, sort])
 
   useEffect(() => {
     if(!message) return
@@ -190,12 +193,20 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
           message && 
           <span className={`text-sm ${message.success ? 'text-success' : 'text-error'}`}>{message.text}</span>
         }
-        <select className="select-sort" aria-label="Sort Bookmarks" name="sort" id="sort">
-          <option defaultChecked>Sort</option>
-          <option value="add">Recently added</option>
-          <option value="visit">Recently visited</option>
-          <option value="most">Most visited</option>
-        </select>
+        <label className="sort-label">
+          <ArrowUpDownIcon aria-hidden='true' className="arrow" size={18} />
+          <select 
+            aria-label="Sort bookmarks" 
+            name="sort"
+            value={sort}
+            onChange={e => setSort(e.target.value)}
+            >
+            <option value='' disabled hidden>Sort by</option>
+            <option value="add">Recently added</option>
+            <option value="visit">Recently visited</option>
+            <option value="most">Most visited</option>
+          </select>
+        </label>
       </div>
 
       <section className="bookmarks-container">

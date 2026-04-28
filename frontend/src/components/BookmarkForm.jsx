@@ -28,7 +28,7 @@ const BookmarkForm = ({ onClose, onBookmarkAdd, bookmarkData, onBookmarkUpdate }
   async function addBookmark(data){
     try {
       setError(null)
-      const res = await fetch('http://localhost:8000/api/add', {
+      const res = await fetch('http://localhost:8000/api/bookmark/add', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"

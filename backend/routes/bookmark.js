@@ -4,7 +4,7 @@ import { addBookmark, getBookmarks, deleteBookmark, updateBookmark, pinBookmark,
 export const bookmarkRouter = express.Router()
 
 bookmarkRouter.get('/', getBookmarks)
-bookmarkRouter.post('/add', addBookmark)
+bookmarkRouter.post('/bookmark/add', addBookmark)
 bookmarkRouter.delete('/bookmark/:id', deleteBookmark)
 bookmarkRouter.put('/bookmark/:id', updateBookmark)
 bookmarkRouter.patch('/bookmark/:id', pinBookmark)

@@ -7,10 +7,18 @@ function sanitizeData(text){
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
+const sortMap = {
+  add: { createdAt: -1 },
+  visit: { lastVisited: -1 },
+  most: { count: -1 }
+}
+
 export async function getBookmarks(req, res){
   try {
-    const { category, search } = req.query
-    let filter = {}
+    const { category, search, sortBy } = req.query
+    let filter = {
+      archived: false
+    }
     if(category){
       const tags = category.split(',')
       filter.category = { $in: tags }
@@ -21,7 +29,9 @@ export async function getBookmarks(req, res){
       filter.title = { $regex: searchStr, $options: 'i' }
     }
 
-    const bookmarks = await Bookmark.find(filter).sort({ createdAt: -1 })
+    const sort = sortMap[sortBy] || { createdAt: -1 }
+
+    const bookmarks = await Bookmark.find(filter).sort(sort)
     res.json(bookmarks)
   } catch (error) {
     console.log(error)
