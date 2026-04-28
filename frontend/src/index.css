@@ -103,6 +103,7 @@ input[type="search"]::-ms-reveal {
   }
 
   aside{
+    background-color: var(--color-bg-primary);
     width: var(--spacing-sidebar);
     padding: 1rem;
     border-right: 1px solid var(--color-border);

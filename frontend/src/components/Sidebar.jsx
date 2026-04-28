@@ -1,6 +1,6 @@
 import { ArchiveIcon, HomeIcon } from "lucide-react"
 
-const Sidebar = ({ categories, selectedTags, onTagSelect, contentPage, onArchiveClick, onHomeClick }) => {  
+const Sidebar = ({ categories, selectedTags, onTagSelect, contentPage, onArchiveClick, onHomeClick, showSidebar }) => {  
 
   function handleChange(e){
     const { value, checked } = e.target
@@ -8,7 +8,7 @@ const Sidebar = ({ categories, selectedTags, onTagSelect, contentPage, onArchive
   }
 
   return (
-    <aside className="hidden lg:block">
+    <aside className={`fixed h-full lg:h-auto z-10 transition-transform duration-300 ${showSidebar ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0`}>
       <button 
         onClick={onHomeClick}
         className={`flex items-center gap-2 py-1.5 px-2 text-sm rounded-md mb-1 w-full ${contentPage === 'home' ? 'bg-accent-subtle text-accent font-semibold' : ''}`}

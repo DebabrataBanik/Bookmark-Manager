@@ -15,6 +15,7 @@ const App = () => {
   const [bookmarkData, setBookmarkData] = useState(null)
   const [contentPage, setContentPage] = useState('home')
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
+  const [showSidebar, setShowSidebar] = useState(true)
 
   async function getCategories(){
     try {
@@ -92,7 +93,8 @@ const App = () => {
         <Header 
           onOpen={openForm} 
           searchInput={searchInput} 
-          onSearchChange={handleSearchInputChange} 
+          onSearchChange={handleSearchInputChange}
+          setShowSidebar={setShowSidebar}
         />
         
         <div className="main-wrapper">
@@ -104,6 +106,7 @@ const App = () => {
             contentPage={contentPage}
             onArchiveClick={goToArchive}
             onHomeClick={goToHome}
+            showSidebar={showSidebar}
           />
           {
             contentPage === 'home' ?
