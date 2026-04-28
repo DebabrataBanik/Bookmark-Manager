@@ -8,7 +8,7 @@ const Sidebar = ({ categories, selectedTags, onTagSelect, contentPage, onArchive
   }
 
   return (
-    <aside>
+    <aside className="hidden lg:block">
       <button 
         onClick={onHomeClick}
         className={`flex items-center gap-2 py-1.5 px-2 text-sm rounded-md mb-1 w-full ${contentPage === 'home' ? 'bg-accent-subtle text-accent font-semibold' : ''}`}

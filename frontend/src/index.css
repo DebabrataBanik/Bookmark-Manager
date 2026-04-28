@@ -90,7 +90,7 @@ input[type="search"]::-ms-reveal {
   }
 
   header{
-    @apply px-5 py-3 flex items-center justify-between border-b border-b-border;
+    @apply px-5 py-3 flex items-center lg:justify-between border-b border-b-border;
   }
 
   button{
@@ -203,7 +203,6 @@ input[type="search"]::-ms-reveal {
     background-color: var(--color-accent);
     color: var(--color-accent-subtle);
     font-size: var(--text-sm);
-    padding-inline: 0.75rem;
     border-radius: var(--radius-md);
     transition: background-color 0.3s ease;
 
@@ -218,10 +217,12 @@ input[type="search"]::-ms-reveal {
     color: var(--color-accent-subtle);
     font-weight: 500;
     border-radius: var(--radius-full);
-    height: 32px;
+    height: 40px;
     aspect-ratio: 1;
     align-self: center;
     transition: background-color 0.3s ease;
+    overflow: hidden;
+    object-fit: cover;
 
     &:hover{
       background-color: var(--color-accent-hover);
