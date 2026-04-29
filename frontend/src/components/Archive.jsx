@@ -5,13 +5,14 @@ import { EyeIcon, Clock4Icon, CalendarIcon, EllipsisVerticalIcon, TrashIcon, Arc
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 
 
-const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, bookmarks, openDeleteDialog, setOpenDeleteDialog }) => {
+const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, openDeleteDialog, setOpenDeleteDialog }) => {
 
   const [archivedBookmarks, setArchivedBookmarks] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [openId, setOpenId] = useState(null)
   const [message, setMessage] = useState(null)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   const optionsRef = useRef(null)
 
@@ -47,7 +48,7 @@ const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, bookmarks, ope
       }
     }
     getArchives()
-  }, [bookmarks])
+  }, [refreshKey])
 
   useEffect(() => {
     if(!message) return
@@ -69,6 +70,7 @@ const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, bookmarks, ope
         throw Error(data.message || `Error: ${res.status} ${res.statusText}`)
       }
       setBookmarks(prev => prev.map(item => item._id === data._id ? data : item))
+      setRefreshKey(prev => prev + 1)
       await getCategories()
 
     } catch (error) {
@@ -91,6 +93,7 @@ const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, bookmarks, ope
       }
       setMessage({ success: true, text: data.message })
       onBookmarkDelete(openId)
+      setRefreshKey(prev => prev + 1)
     } catch (error) {
       console.error(error)
       setMessage({ success: false, text: 'Network error' })
