@@ -148,9 +148,9 @@ const BookmarkForm = ({ onClose, onBookmarkAdd, bookmarkData, onBookmarkUpdate }
   : (bookmarkData ? 'Update' : 'Add')
 
   return (
-    <div className="form-wrapper">
-      <form onSubmit={handleSubmit} className="bookmark-form">
-        <h1 className="text-xl font-bold mb-2 mx-2">Add Bookmark</h1>
+    <div className="form-wrapper px-5 sm:p-8">
+      <form onSubmit={handleSubmit} className="bookmark-form gap-1 sm:gap-4">
+        <h1 className="text-lg sm:text-xl font-bold mb-2 mx-2 text-center sm:text-left">Add Bookmark</h1>
         <div className="h-5 text-center">
           {
             error?.message && <span className="text-sm text-center text-error">{error.message}</span>
@@ -159,8 +159,8 @@ const BookmarkForm = ({ onClose, onBookmarkAdd, bookmarkData, onBookmarkUpdate }
             message && <span className="text-sm text-center text-success">{message}</span>
           }
         </div>
-        <div className="flex gap-2">
-          <label className="w-1/2 form-label">
+        <div className="flex flex-col sm:flex-row gap-2">
+          <label className="w-full sm:w-1/2 form-label">
             <span className="ml-1">URL</span>
             <input 
               type="text" 
@@ -178,7 +178,7 @@ const BookmarkForm = ({ onClose, onBookmarkAdd, bookmarkData, onBookmarkUpdate }
             </span>
           </label>
 
-          <label className="w-1/2 form-label">
+          <label className="w-full sm:w-1/2 form-label">
             <span className="ml-1">Title</span>
             <input 
               type="text" 
