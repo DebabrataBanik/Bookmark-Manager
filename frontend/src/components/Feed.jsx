@@ -186,7 +186,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
   const displayBookmarks = bookmarks.filter(b => !b.archived)
 
   return (
-    <main>
+    <main className="p-4 sm:p-8">
       <div className="flex items-center gap-10">
         <h1 className="text-lg font-bold">All bookmarks</h1>
         {

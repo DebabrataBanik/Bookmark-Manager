@@ -113,12 +113,10 @@ input[type="search"]::-ms-reveal {
   main{
     background-color: var(--color-accent-subtle);
     flex-grow: 1;
-    padding: 2rem;
-    max-width: var(--container-page);
   }
 
   article{
-    @apply border border-border-subtle shadow-sm rounded-lg bg-bg-primary flex flex-col relative;
+    @apply border border-border-subtle shadow-sm rounded-lg bg-bg-primary flex flex-col relative max-w-87.5 mx-auto;
   }
 
   select, ::picker(select) {

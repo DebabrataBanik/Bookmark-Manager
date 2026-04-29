@@ -113,7 +113,7 @@ const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, bookmarks, ope
   } 
 
   return (
-    <main>
+    <main className="p-4 sm:p-8">
       <div className="flex items-center gap-10">
         <h1 className="text-lg font-bold">Your Archive</h1>
         {
