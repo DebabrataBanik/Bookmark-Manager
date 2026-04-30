@@ -3,13 +3,13 @@ import Logo from "./subcomponents/Logo"
 import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon, ClipboardCopyIcon, ArchiveIcon, ExternalLinkIcon, ArrowUpDownIcon } from 'lucide-react'
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 import { getDate } from "../utils/getDate"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { archiveBookmark, deleteBookmark, getBookmarks, pinBookmark, updateBookmarkOnVisit } from "../services/bookmarkService"
 
-const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDelete, onOpen, getCategories, openDeleteDialog, setOpenDeleteDialog }) => {
+const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDeleteDialog }) => {
 
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
   const [openId, setOpenId] = useState(null)
-  const [selectedId, setSelectedId] = useState(null)
+  const [deleteId, setDeleteId] = useState(null)
   const [message, setMessage] = useState(null)
   const [copied, setCopied] = useState(false)
   const [sort, setSort] = useState('')
@@ -26,44 +26,6 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
     return () => document.removeEventListener("click", handleOutsideClick)
   }, [])
 
-  
-  useEffect(() => {
-    const params = new URLSearchParams()
-    if(selectedTags.length > 0){
-      params.set('category', selectedTags.join(','))
-    }
-    if(searchInput.trim()){
-      params.set('search', searchInput.trim())
-    }
-    if(sort){
-      params.set('sortBy', sort)
-    }
-    const url = `http://localhost:8000/api?${params.toString()}`
-    async function getData(){ 
-      setError(null)
-      try {
-        const res = await fetch(url)
-        if(!res.ok){
-          const err = await res.json()
-          throw new Error(err.message || `HTTP: ${res.status}: ${res.statusText}`)
-        }
-        const data = await res.json()
-        setBookmarks(data)
-
-      } catch (error) {
-        if (error instanceof TypeError && error.message === "Failed to fetch") {
-          setError("Server is unreachable.")
-        } else {
-          console.error(error)
-          setError(error.message)
-        }
-      } finally {
-        setLoading(false)
-      }
-    }
-    getData()
-  }, [selectedTags, searchInput, sort])
-
   useEffect(() => {
     if(!message) return
 
@@ -74,61 +36,70 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
     return () => clearTimeout(timer)
   }, [message])
 
-  async function pinBookmark(id){
-    try {
-      const res = await fetch(`http://localhost:8000/api/bookmark/${id}`, {
-        method: 'PATCH'
-      })
-      const data = await res.json()
-      if(!res.ok){
-        throw Error(data.message || `Error : ${res.status} ${res.statusText}`)
-      }
-      setBookmarks(prev => prev.map(item => item._id === data._id ? data : item))
 
-    } catch (error) {
-      console.error(error)
+  const { data: bookmarks = [], isLoading, error } = useQuery({
+    queryKey: ['bookmarks', selectedTags, searchInput, sort],
+    queryFn: () => {
+      const params = new URLSearchParams()
+      if(selectedTags.length > 0){
+        params.set('category', selectedTags.join(','))
+      }
+      if(searchInput.trim()){
+        params.set('search', searchInput.trim())
+      }
+      if(sort){
+        params.set('sortBy', sort)
+      }
+      const url = `http://localhost:8000/api?${params.toString()}`
+      return getBookmarks(url)
     }
-  }
+  })
 
-  async function archiveBookmark(id){
-    try {
-      const res = await fetch(`http://localhost:8000/api/bookmark/archive/${id}`, {
-        method: 'PATCH'
-      })
-      const data = await res.json()
-      if(!res.ok){
-        throw Error(data.message || `Error: ${res.status} ${res.statusText}`)
-      }
-      setBookmarks(prev => prev.map(item => item._id === data._id ? data : item))
-      await getCategories()
+  const queryClient = useQueryClient()
 
-    } catch (error) {
-      console.error(error)
+  const pinMutation = useMutation({
+    mutationFn: pinBookmark,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookmarks']})
+    },
+    onError: (error) => {
+      setMessage({ text: error.message, type: 'error' })
+    } 
+  })
+
+  const archiveMutation = useMutation({
+    mutationFn: archiveBookmark,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookmarks']})
+      queryClient.invalidateQueries({ queryKey: ['archives']})
+      queryClient.invalidateQueries({ queryKey: ['categories']})
+    },
+    onError: (error) => {
+      setMessage({ text: error.message, type: 'error' })
     }
-  }
+  })
 
-  async function handleDelete(){
-    if(!selectedId) return
+  const onVisitMutation = useMutation({
+    mutationFn: updateBookmarkOnVisit,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookmarks']})
+    },
+    onError: (error) => {
+      setMessage({ text: error.message, type: 'error' })
+    }
+  })
 
-    setMessage(null)
-    try {
-      const res = await fetch(`http://localhost:8000/api/bookmark/${selectedId}`, {
-        method: 'DELETE'
-      })
-      const data = await res.json()
-      if(!res.ok){
-        setMessage({ success: false, text: data.message })
-        return
-      }
-      setMessage({ success: true, text: data.message })
-      onBookmarkDelete(selectedId)
-    } catch (error) {
-      console.error(error)
-      setMessage({ success: false, text: 'Network error' })
-    } finally {
+  const deleteMutation = useMutation({
+    mutationFn: deleteBookmark,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['bookmarks']})
       handleClose()
+      setMessage({ text: data.message, type: 'success' })
+    },
+    onError: (error) => {
+      setMessage({ text: error.message, type: 'error' })
     }
-  }
+  })
 
   function handleToggle(id){
     setOpenId(prev => prev === id ? null : id)
@@ -136,12 +107,12 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
 
   function handleOpenDeleteDialog(id){
     setOpenDeleteDialog(true)
-    setSelectedId(id)
+    setDeleteId(id)
   } 
 
   function handleClose(){
     setOpenDeleteDialog(false)
-    setSelectedId(null)
+    setDeleteId(null)
     setOpenId(null)
   }
 
@@ -161,26 +132,9 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
     }
   }
 
-  async function updateBookmarkOnVisit(id){
-    try {
-      const res = await fetch(`http://localhost:8000/api/bookmark/${id}/visit`, {
-        method: 'PATCH'
-      })
-      const data = await res.json()
-      if(!res.ok){
-        throw new Error(data.message || `Error: ${res.status} ${res.statusText}`)
-      }
-      setBookmarks(prev => prev.map(b => b._id === data._id ? data : b))
-
-    } catch (error) {
-      console.error(error)
-      setError(error.message)
-    }
-  }
-
   function handleVisit(url, id){
     window.open(url, '_blank', 'noreferrer')
-    updateBookmarkOnVisit(id)
+    onVisitMutation.mutate(id)
   }
 
   const displayBookmarks = bookmarks.filter(b => !b.archived)
@@ -191,7 +145,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
         <h1 className="text-lg font-bold">All bookmarks</h1>
         {
           message && 
-          <span className={`text-sm ${message.success ? 'text-success' : 'text-error'}`}>{message.text}</span>
+          <span className={`text-sm ${message.type === 'success' ? 'text-success' : 'text-error'}`}>{message.text}</span>
         }
         <label className="sort-label">
           <ArrowUpDownIcon aria-hidden='true' className="arrow" size={18} />
@@ -212,11 +166,11 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
       <section className="bookmarks-container">
 
         {
-          loading ?
+          isLoading ?
             <p className="text-sm text-text-tertiary">Loading bookmarks...</p>
           :
-          !loading && error ?
-            <p className="text-sm text-error">{error}</p>
+          !isLoading && error ?
+            <p className="text-sm text-error">{error.message}</p>
           :
           (
             displayBookmarks.length === 0 ? <p className="text-sm text-text-tertiary">No bookmarks to show.</p>
@@ -312,12 +266,12 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
                     <div className="flex gap-3 items-start">
                       <button
                         title="Archive"
-                        onClick={() => archiveBookmark(item._id)}
+                        onClick={() => archiveMutation.mutate(item._id)}
                       >
                         <ArchiveIcon size={14} />
                       </button>
                       <button 
-                        onClick={() => pinBookmark(item._id)} 
+                        onClick={() => pinMutation.mutate(item._id)} 
                         title="Pin" 
                         type="button"
                       >
@@ -333,7 +287,7 @@ const Feed = ({ searchInput, selectedTags, setBookmarks, bookmarks, onBookmarkDe
       </section>
       {
         openDeleteDialog && ( 
-          <ConfirmDeleteDialog onDelete={handleDelete} onClose={handleClose}>
+          <ConfirmDeleteDialog onDelete={() => deleteMutation.mutate(deleteId)} onClose={handleClose}>
             This will permanently delete this bookmark. You can archive this instead of deleting.
           </ConfirmDeleteDialog>
         ) 

@@ -100,7 +100,7 @@ const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
         <h1 className="text-lg font-bold">Your Archive</h1>
         {
           message && 
-          <span className={`text-sm ${message.success ? 'text-success' : 'text-error'}`}>{message.text}</span>
+          <span className={`text-sm ${message.type === 'success' ? 'text-success' : 'text-error'}`}>{message.text}</span>
         }
       </div>
 
