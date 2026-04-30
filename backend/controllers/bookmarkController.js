@@ -122,35 +122,40 @@ export async function updateBookmark(req, res){
 
     let { url, title, description, category } = result.data
 
-    const scrapeRes = await scrape(url)
+    const existing = await Bookmark.findById(id)
 
-    if(!scrapeRes.success){
-      return res.status(500).json({ message: "Could not scrape data for that url" })
+    if(!existing){
+      return res.status(404).json({ message: 'Bookmark not found' })
     }
+
+    const isUrlDifferent = existing.url !== url
+
+    let metadata = {}
     
-    const metadata = scrapeRes.metadata
+    if(isUrlDifferent){
+      const scrapeRes = await scrape(url)
+
+      if(!scrapeRes.success){
+        return res.status(500).json({ message: "Could not scrape data for that url" })
+      }
+      
+      metadata = scrapeRes.metadata
+    }
 
     const bookmarkData = {
       url, 
       title, 
-      description: description || metadata.description || '',
-      publisher: metadata.publisher || '',
-      author: metadata.author || '',
-      domain: new URL(url).hostname.replace(/^www\./, ''),
-      date: metadata.date || new Date().toISOString(),
+      description: description || (isUrlDifferent ? metadata.description : existing.description) || '',
+      publisher: isUrlDifferent ? metadata.publisher : existing.publisher,
+      author: isUrlDifferent ? metadata.author : existing.author,
+      domain: isUrlDifferent ? new URL(url).hostname.replace(/^www\./, '') : existing.domain,
+      date: isUrlDifferent ? metadata.date || new Date().toISOString() : existing.date,
       category
     }
 
     const updatedBookmark = await Bookmark.findOneAndUpdate({ _id: id }, bookmarkData, { returnDocument: 'after', runValidators: true })
 
-    if (!updatedBookmark) {
-      return res.status(404).json({
-        message: 'Bookmark not found'
-      })
-    }
-
     res.status(200).json({ message: 'Bookmark successfully updated', data: updatedBookmark })
-
 
   } catch (error) {
     console.log(error)
