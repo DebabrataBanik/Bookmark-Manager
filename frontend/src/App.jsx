@@ -8,7 +8,6 @@ import { useState} from "react"
 const App = () => {
 
   const [showBookmarkForm, setShowBookmarkForm] = useState(false)
-  const [bookmarks, setBookmarks] = useState([])
   const [selectedTags, setSelectedTags] = useState([])
   const [searchInput, setSearchInput] = useState('')
   const [bookmarkData, setBookmarkData] = useState(null)
@@ -20,16 +19,9 @@ const App = () => {
     setBookmarkData(null)
     setShowBookmarkForm(false)
   }
-  const openForm = (id) => {
-    if(id) {
-      const existingBookmark = bookmarks.find(b => b._id === id)
-      setBookmarkData(existingBookmark)
-    }
+  const openForm = (bookmark) => {
+    setBookmarkData(bookmark || null)
     setShowBookmarkForm(true)
-  }
-
-  function handleBookmarkDelete(id){
-    setBookmarks(prev => prev.filter(item => item._id !== id))
   }
 
   function handleSelectedTags(value, checked){
@@ -81,19 +73,13 @@ const App = () => {
             contentPage === 'home' ?
             <Feed
               onOpen={openForm}
-              onBookmarkDelete={handleBookmarkDelete}
               searchInput={searchInput} 
               selectedTags={selectedTags} 
-              setBookmarks={setBookmarks} 
-              bookmarks={bookmarks}
               openDeleteDialog={openDeleteDialog}
               setOpenDeleteDialog={setOpenDeleteDialog}
             /> 
             :
             <Archive 
-              onBookmarkDelete={handleBookmarkDelete} 
-              setBookmarks={setBookmarks} 
-              bookmarks={bookmarks} 
               openDeleteDialog={openDeleteDialog}
               setOpenDeleteDialog={setOpenDeleteDialog}
             />

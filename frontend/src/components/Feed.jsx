@@ -93,6 +93,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
     mutationFn: deleteBookmark,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['bookmarks']})
+      queryClient.invalidateQueries({ queryKey: ['categories']})
       handleClose()
       setMessage({ text: data.message, type: 'success' })
     },
@@ -116,8 +117,8 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
     setOpenId(null)
   }
 
-  function handleEditClick(id){
-    onOpen(id)
+  function handleEditClick(item){
+    onOpen(item)
     setOpenId(null)
   }
 
@@ -200,7 +201,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
                             <button 
                               type="button" 
                               className="edit-btn"
-                              onClick={() => handleEditClick(item._id)}
+                              onClick={() => handleEditClick(item)}
                             >
                               <PencilIcon size={12} />
                               Edit 

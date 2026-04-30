@@ -28,7 +28,7 @@ const Header = ({ onOpen, onSearchChange, searchInput, setShowSidebar }) => {
             onChange={(e) => onSearchChange(e.target.value)}
           />
         </label>
-        <button onClick={onOpen} className='add-btn px-2.5' type='button'> 
+        <button onClick={() => onOpen(null)} className='add-btn px-2.5' type='button'> 
           <PlusIcon aria-hidden='true' size={18} /> 
           <span className='hidden md:block'>
             Add Bookmark
