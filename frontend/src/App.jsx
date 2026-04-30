@@ -28,14 +28,6 @@ const App = () => {
     setShowBookmarkForm(true)
   }
 
-  function handleBookmarkUpdate(updatedBookmark){
-    setBookmarks(prev => prev.map(item => item._id === updatedBookmark._id ? updatedBookmark : item))
-  }
-
-  function handleBookmarkAdd(newBookmark){
-    setBookmarks(prev => [newBookmark, ...prev])
-  }
-
   function handleBookmarkDelete(id){
     setBookmarks(prev => prev.filter(item => item._id !== id))
   }
@@ -110,7 +102,7 @@ const App = () => {
         </div>
       </div>
       {
-        showBookmarkForm && <BookmarkForm bookmarkData={bookmarkData} onClose={closeForm} onBookmarkAdd={handleBookmarkAdd} onBookmarkUpdate={handleBookmarkUpdate} />
+        showBookmarkForm && <BookmarkForm bookmarkData={bookmarkData} onClose={closeForm} />
       }
     </div>
   )

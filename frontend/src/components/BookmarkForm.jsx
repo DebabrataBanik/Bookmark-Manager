@@ -1,7 +1,9 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState, useEffect } from "react"
 import validator from 'validator'
+import { addBookmark, updateBookmark } from "../services/bookmarkService"
 
-const BookmarkForm = ({ onClose, onBookmarkAdd, bookmarkData, onBookmarkUpdate }) => {
+const BookmarkForm = ({ onClose, bookmarkData }) => {
   const [formData, setFormData] = useState(() => {
     return {
       url: bookmarkData?.url || '',
@@ -11,7 +13,6 @@ const BookmarkForm = ({ onClose, onBookmarkAdd, bookmarkData, onBookmarkUpdate }
     }
   })
   const [error, setError] = useState(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState(null)
 
   useEffect(() => {
@@ -25,71 +26,35 @@ const BookmarkForm = ({ onClose, onBookmarkAdd, bookmarkData, onBookmarkUpdate }
     return () => clearTimeout(timer)
   }, [message, onClose])
 
-  async function addBookmark(data){
-    try {
-      setError(null)
-      const res = await fetch('http://localhost:8000/api/bookmark/add', {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      })
+  const queryClient = useQueryClient()
 
-      if(!res.ok){
-        const err = await res.json()
-        setError(err)
-        return
-      }
-      const result = await res.json()
-      setMessage(result.message)
-      setFormData({ url: '',
-        title: '',
-        description: '',
-        category: ''
-      })
-      onBookmarkAdd(result.data)
-
-    } catch (error) {
-      console.error(error)
-      setError({ message: error.message })
-    } finally{
-      setIsSubmitting(false)
-    }
+  function handleSuccessState(data){
+    queryClient.invalidateQueries({ queryKey: ['bookmarks']})
+    queryClient.invalidateQueries({ queryKey: ['categories']})
+    setMessage(data.message)
+    setFormData({
+      url: '',
+      title: '',
+      description: '',
+      category: ''
+    })
   }
 
-  async function updateBookmark(data){
-    try {
-      setError(null)
-      const res = await fetch(`http://localhost:8000/api/bookmark/${bookmarkData._id}`, {
-        method: 'PUT',
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      })
-
-      if(!res.ok){
-        const err = await res.json()
-        setError(err)
-        return
-      }
-      const result = await res.json()
-      setMessage(result.message)
-      setFormData({ url: '',
-        title: '',
-        description: '',
-        category: ''
-      })
-      onBookmarkUpdate(result.data)
-
-    } catch (error) {
-      console.error(error)
+  const addMutation = useMutation({
+    mutationFn: addBookmark,
+    onSuccess: (data) => handleSuccessState(data),
+    onError: (error) => {
       setError({ message: error.message })
-    } finally{
-      setIsSubmitting(false)
     }
-  }
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: updateBookmark,
+    onSuccess: (data) => handleSuccessState(data),
+    onError: (error) => {
+      setError({ message: error.message })
+    }
+  })
 
   async function handleSubmit(e){
     e.preventDefault()
@@ -115,19 +80,22 @@ const BookmarkForm = ({ onClose, onBookmarkAdd, bookmarkData, onBookmarkUpdate }
       setError(error)
       return 
     }
-
-    setIsSubmitting(true)
     
     const validData = {
       ...data,
       url
     }
+
+    setError(null)
     
     if(bookmarkData){
-      await updateBookmark(validData)
-      return
+      updateMutation.mutate({
+        id: bookmarkData._id,
+        data: validData
+      })
+    } else {
+      addMutation.mutate(validData)
     }
-    await addBookmark(validData)
   }
 
   function handleChange(e){
@@ -142,10 +110,12 @@ const BookmarkForm = ({ onClose, onBookmarkAdd, bookmarkData, onBookmarkUpdate }
       [name]: ''
     }))
   }
-
-  const btnText = isSubmitting
+  
+  const disabledState = addMutation.isPending || updateMutation.isPending
+  const btnText = disabledState
   ? (bookmarkData ? 'Updating...' : 'Adding...')
   : (bookmarkData ? 'Update' : 'Add')
+
 
   return (
     <div className="form-wrapper px-5 sm:p-8">
@@ -222,7 +192,7 @@ const BookmarkForm = ({ onClose, onBookmarkAdd, bookmarkData, onBookmarkUpdate }
 
         <div className="mt-4 mx-1 flex items-center justify-between">
           <button 
-            disabled={isSubmitting} 
+            disabled={disabledState} 
             onClick={onClose} 
             type="button" 
             className="btn close-btn"
@@ -233,7 +203,7 @@ const BookmarkForm = ({ onClose, onBookmarkAdd, bookmarkData, onBookmarkUpdate }
           <button 
             type="submit" 
             className="btn submit-btn"
-            disabled={isSubmitting}
+            disabled={disabledState}
           >
             {btnText}
           </button>
