@@ -3,16 +3,14 @@ import { getDate } from "../utils/getDate"
 import Logo from "./subcomponents/Logo"
 import { EyeIcon, Clock4Icon, CalendarIcon, EllipsisVerticalIcon, TrashIcon, ArchiveRestoreIcon } from 'lucide-react'
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { deleteBookmark, getArchives, restoreBookmark } from "../services/bookmarkService"
 
+const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
 
-const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, openDeleteDialog, setOpenDeleteDialog }) => {
-
-  const [archivedBookmarks, setArchivedBookmarks] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
   const [openId, setOpenId] = useState(null)
   const [message, setMessage] = useState(null)
-  const [refreshKey, setRefreshKey] = useState(0)
+  const [deleteId, setDeleteId] = useState(null)
 
   const optionsRef = useRef(null)
 
@@ -27,30 +25,6 @@ const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, openDeleteDial
   }, [])
 
   useEffect(() => {
-    async function getArchives(){
-      try {
-        const res = await fetch('http://localhost:8000/api/bookmarks/archive')
-        const data = await res.json()
-        if(!res.ok){
-          throw new Error(data.message || `Error: ${res.status} ${res.statusText}`)
-        }
-        setArchivedBookmarks(data)
-
-      } catch (error) {
-        if (error instanceof TypeError && error.message === "Failed to fetch") {
-          setError("Server is unreachable.")
-        } else {
-          console.error(error)
-          setError(error.message)
-        }
-      } finally {
-        setLoading(false)
-      }
-    }
-    getArchives()
-  }, [refreshKey])
-
-  useEffect(() => {
     if(!message) return
 
     const timer = setTimeout(() => {
@@ -60,60 +34,65 @@ const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, openDeleteDial
     return () => clearTimeout(timer)
   }, [message])
 
-  async function restoreBookmark(id){
-    try {
-      const res = await fetch(`http://localhost:8000/api/bookmark/archive/${id}`, {
-        method: 'PATCH'
-      })
-      const data = await res.json()
-      if(!res.ok){
-        throw Error(data.message || `Error: ${res.status} ${res.statusText}`)
-      }
-      setBookmarks(prev => prev.map(item => item._id === data._id ? data : item))
-      setRefreshKey(prev => prev + 1)
-      await getCategories()
-
-    } catch (error) {
-      console.error(error)
+  const { data: archivedBookmarks = [], isLoading, error } = useQuery({
+    queryKey: ['archives'],
+    queryFn: getArchives
+  })
+  
+  const queryClient = useQueryClient()
+  
+  const restoreMutation = useMutation({
+    mutationFn: restoreBookmark,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['categories']})
+      queryClient.invalidateQueries({ queryKey: ['bookmarks']})
+      queryClient.invalidateQueries({ queryKey: ['archives']})
+      handleClose()
+      setMessage({ text: data.message, type: 'success' })
+    },
+    onError: (error) => {
+      setMessage({ text: error.message, type: 'error' })
     }
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteBookmark,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['bookmarks']})
+      queryClient.invalidateQueries({ queryKey: ['archives']})
+      handleClose()
+      setMessage({ text: data.message, type: 'success' })
+    },
+    onError: (error) => {
+      setMessage({ text: error.message, type: 'error' })
+    }
+  })
+
+  function handleRestore(id){
+    restoreMutation.mutate(id)
   }
 
-  async function handleDelete(){
-    if(!openId) return
-
-    setMessage(null)
-    try {
-      const res = await fetch(`http://localhost:8000/api/bookmark/${openId}`, {
-        method: 'DELETE'
-      })
-      const data = await res.json()
-      if(!res.ok){
-        setMessage({ success: false, text: data.message })
-        return
-      }
-      setMessage({ success: true, text: data.message })
-      onBookmarkDelete(openId)
-      setRefreshKey(prev => prev + 1)
-    } catch (error) {
-      console.error(error)
-      setMessage({ success: false, text: 'Network error' })
-    } finally {
-      handleClose()
-    }
+  function handleDelete(id){
+    deleteMutation.mutate(id)
   }
 
   function handleClose(){
     setOpenDeleteDialog(false)
     setOpenId(null)
+    setDeleteId(null)
   }
 
   function handleToggle(id){
     setOpenId(prev => prev === id ? null : id)
   }
 
-  function handleOpenDeleteDialog(){
+  function handleOpenDeleteDialog(id){
+    setDeleteId(id)
     setOpenDeleteDialog(true)
   } 
+
+  const isMutating =
+  restoreMutation.isPending || deleteMutation.isPending
 
   return (
     <main className="p-4 sm:p-8">
@@ -128,11 +107,11 @@ const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, openDeleteDial
       <section className="bookmarks-container">
 
         {
-          loading ?
+          isLoading ?
             <p className="text-sm text-text-tertiary">Loading archives...</p>
           :
-          !loading && error ?
-            <p className="text-sm text-error">{error}</p>
+          !isLoading && error ?
+            <p className="text-sm text-error">{error.message}</p>
           :
           (
             archivedBookmarks.length === 0 ? <p className="text-sm text-text-tertiary">Nothing to show.</p>
@@ -161,7 +140,8 @@ const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, openDeleteDial
                             <button
                               type="button"
                               className="visit-btn"
-                              onClick={() => restoreBookmark(item._id)}
+                              disabled={isMutating}
+                              onClick={() => handleRestore(item._id)}
                             >
                               <ArchiveRestoreIcon size={12} />
                               Restore
@@ -169,7 +149,7 @@ const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, openDeleteDial
                             <button 
                               type="button" 
                               className="delete-btn"
-                              onClick={handleOpenDeleteDialog}
+                              onClick={() => handleOpenDeleteDialog(item._id)}
                               >
                               <TrashIcon size={12} /> 
                               Delete 
@@ -211,7 +191,7 @@ const Archive = ({ getCategories, onBookmarkDelete, setBookmarks, openDeleteDial
       </section>
       {
         openDeleteDialog && (
-          <ConfirmDeleteDialog onDelete={handleDelete} onClose={handleClose}>
+          <ConfirmDeleteDialog disabled={isMutating} onDelete={() => handleDelete(deleteId)} onClose={handleClose}>
             Are you sure you want to delete this bookmark.
           </ConfirmDeleteDialog>
         )

@@ -1,7 +1,7 @@
 import { Trash2Icon } from 'lucide-react'
 import { createPortal } from 'react-dom'
 
-const ConfirmDeleteDialog = ({ children, onClose, onDelete }) => {
+const ConfirmDeleteDialog = ({ children, onClose, onDelete, disabled }) => {
   return createPortal(
     <div className="delete-dialog-wrapper">
       <div className="dialog-container">
@@ -15,7 +15,7 @@ const ConfirmDeleteDialog = ({ children, onClose, onDelete }) => {
 
         <div className='btn-container'>
           <button onClick={onClose} type='button' className='cancel'>Cancel</button>
-          <button onClick={onDelete} type='button' className='delete'>Delete</button>
+          <button disabled={disabled} onClick={onDelete} type='button' className='delete'>Delete</button>
         </div>
       </div>
     </div>,
