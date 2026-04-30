@@ -1,4 +1,12 @@
-export async function getBookmarks(url){ 
+const BASE_URL = import.meta.env.VITE_BASE_URL
+
+export async function getBookmarks({tags, search, sort}){ 
+  const params = new URLSearchParams()
+  if(tags?.length > 0) params.set('category', tags.join(','))
+  if(search?.trim()) params.set('search', search.trim())
+  if(sort) params.set('sortBy', sort)
+
+  const url = `${BASE_URL}/api?${params.toString()}`
   const res = await fetch(url)
   if(!res.ok){
     const err = await res.json()
@@ -8,7 +16,7 @@ export async function getBookmarks(url){
 }
 
 export async function addBookmark(data){
-  const res = await fetch('http://localhost:8000/api/bookmark/add', {
+  const res = await fetch(`${BASE_URL}/api/bookmark/add`, {
     method: 'POST',
     headers: {
       "Content-Type": "application/json"
@@ -24,7 +32,7 @@ export async function addBookmark(data){
 }
 
 export async function updateBookmark({id, data}){
-  const res = await fetch(`http://localhost:8000/api/bookmark/${id}`, {
+  const res = await fetch(`${BASE_URL}/api/bookmark/${id}`, {
     method: 'PUT',
     headers: {
       "Content-Type": "application/json"
@@ -40,7 +48,7 @@ export async function updateBookmark({id, data}){
 }
 
 export async function getArchives(){
-  const res = await fetch('http://localhost:8000/api/bookmarks/archive')
+  const res = await fetch(`${BASE_URL}/api/bookmarks/archive`)
   if(!res.ok){
     const err = await res.json()
     throw new Error(err.message || 'Failed to get archived bookmarks')
@@ -50,7 +58,7 @@ export async function getArchives(){
 }
 
 export async function restoreBookmark(id){
-  const res = await fetch(`http://localhost:8000/api/bookmark/archive/${id}`, {
+  const res = await fetch(`${BASE_URL}/api/bookmark/archive/${id}`, {
     method: 'PATCH'
   })
   if(!res.ok){
@@ -61,7 +69,7 @@ export async function restoreBookmark(id){
 }
 
 export async function deleteBookmark(id){
-  const res = await fetch(`http://localhost:8000/api/bookmark/${id}`, {
+  const res = await fetch(`${BASE_URL}/api/bookmark/${id}`, {
     method: 'DELETE'
   })
   if(!res.ok){
@@ -72,7 +80,7 @@ export async function deleteBookmark(id){
 }
 
 export async function pinBookmark(id){
-  const res = await fetch(`http://localhost:8000/api/bookmark/${id}`, {
+  const res = await fetch(`${BASE_URL}/api/bookmark/${id}`, {
     method: 'PATCH'
   })
   if(!res.ok){
@@ -83,7 +91,7 @@ export async function pinBookmark(id){
 }
 
 export async function archiveBookmark(id){
-  const res = await fetch(`http://localhost:8000/api/bookmark/archive/${id}`, {
+  const res = await fetch(`${BASE_URL}/api/bookmark/archive/${id}`, {
     method: 'PATCH'
   })
   if(!res.ok){
@@ -94,7 +102,7 @@ export async function archiveBookmark(id){
 }
 
 export async function updateBookmarkOnVisit(id){
-  const res = await fetch(`http://localhost:8000/api/bookmark/${id}/visit`, {
+  const res = await fetch(`${BASE_URL}/api/bookmark/${id}/visit`, {
     method: 'PATCH'
   })
   if(!res.ok){

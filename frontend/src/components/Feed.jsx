@@ -39,20 +39,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
 
   const { data: bookmarks = [], isLoading, error } = useQuery({
     queryKey: ['bookmarks', selectedTags, searchInput, sort],
-    queryFn: () => {
-      const params = new URLSearchParams()
-      if(selectedTags.length > 0){
-        params.set('category', selectedTags.join(','))
-      }
-      if(searchInput.trim()){
-        params.set('search', searchInput.trim())
-      }
-      if(sort){
-        params.set('sortBy', sort)
-      }
-      const url = `http://localhost:8000/api?${params.toString()}`
-      return getBookmarks(url)
-    }
+    queryFn: () => getBookmarks({tags: selectedTags, search: searchInput, sort })
   })
 
   const queryClient = useQueryClient()
@@ -138,8 +125,6 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
     onVisitMutation.mutate(id)
   }
 
-  const displayBookmarks = bookmarks.filter(b => !b.archived)
-
   return (
     <main className="p-4 sm:p-8">
       <div className="flex items-center gap-10">
@@ -174,10 +159,10 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
             <p className="text-sm text-error">{error.message}</p>
           :
           (
-            displayBookmarks.length === 0 ? <p className="text-sm text-text-tertiary">No bookmarks to show.</p>
+            bookmarks.length === 0 ? <p className="text-sm text-text-tertiary">No bookmarks to show.</p>
             :
             (
-              displayBookmarks.map(item => { 
+              bookmarks.map(item => { 
                 const dateAdded = getDate(item.createdAt)
                 const lastVisited = getDate(item.lastVisited)
 
