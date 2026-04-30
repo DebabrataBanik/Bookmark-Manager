@@ -3,7 +3,7 @@ import Sidebar from "./components/Sidebar"
 import Feed from "./components/Feed"
 import BookmarkForm from "./components/BookmarkForm"
 import Archive from "./components/Archive"
-import { useState, useEffect } from "react"
+import { useState} from "react"
 
 const App = () => {
 
@@ -11,29 +11,10 @@ const App = () => {
   const [bookmarks, setBookmarks] = useState([])
   const [selectedTags, setSelectedTags] = useState([])
   const [searchInput, setSearchInput] = useState('')
-  const [categories, setCategories] = useState([])
   const [bookmarkData, setBookmarkData] = useState(null)
   const [contentPage, setContentPage] = useState('home')
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const [showSidebar, setShowSidebar] = useState(true)
-
-  async function getCategories(){
-    try {
-      const res = await fetch('http://localhost:8000/api/categories')
-      if(!res.ok){
-        const err = await res.json()
-        throw new Error(err.message || `Failed to fetch categories: ${res.status} ${res.statusText}`)
-      }
-      const data = await res.json()
-      setCategories(data)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  useEffect(() => {
-    getCategories()
-  }, [])
 
   const closeForm = () => {
     setBookmarkData(null)
@@ -49,17 +30,14 @@ const App = () => {
 
   function handleBookmarkUpdate(updatedBookmark){
     setBookmarks(prev => prev.map(item => item._id === updatedBookmark._id ? updatedBookmark : item))
-    getCategories()
   }
 
   function handleBookmarkAdd(newBookmark){
     setBookmarks(prev => [newBookmark, ...prev])
-    getCategories()
   }
 
   function handleBookmarkDelete(id){
     setBookmarks(prev => prev.filter(item => item._id !== id))
-    getCategories()
   }
 
   function handleSelectedTags(value, checked){
@@ -100,7 +78,6 @@ const App = () => {
         <div className="main-wrapper">
           
           <Sidebar 
-            categories={categories}
             selectedTags={selectedTags} 
             onTagSelect={handleSelectedTags} 
             contentPage={contentPage}
@@ -117,13 +94,11 @@ const App = () => {
               selectedTags={selectedTags} 
               setBookmarks={setBookmarks} 
               bookmarks={bookmarks}
-              getCategories={getCategories}
               openDeleteDialog={openDeleteDialog}
               setOpenDeleteDialog={setOpenDeleteDialog}
             /> 
             :
             <Archive 
-              getCategories={getCategories} 
               onBookmarkDelete={handleBookmarkDelete} 
               setBookmarks={setBookmarks} 
               bookmarks={bookmarks} 

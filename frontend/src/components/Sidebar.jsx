@@ -1,6 +1,13 @@
 import { ArchiveIcon, HomeIcon } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import { getCategories } from "../services/categoryService"
 
-const Sidebar = ({ categories, selectedTags, onTagSelect, contentPage, onArchiveClick, onHomeClick, showSidebar }) => {  
+const Sidebar = ({ selectedTags, onTagSelect, contentPage, onArchiveClick, onHomeClick, showSidebar }) => {  
+
+  const { data: categories = [], isLoading } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories
+  })
 
   function handleChange(e){
     const { value, checked } = e.target
@@ -28,7 +35,10 @@ const Sidebar = ({ categories, selectedTags, onTagSelect, contentPage, onArchive
         <h3 className="text-xs font-medium">TAGS</h3>
         <form className="flex flex-col gap-4 mt-2">
           {
-            categories.length > 0 ? (
+            isLoading ? 
+            <p className="text-xs">Categories loading skeleton</p>
+            :
+            categories.length > 0 && (
               categories.map(cat => {
                 return (
                   <label key={cat.name} className="checkbox-label">
@@ -45,8 +55,6 @@ const Sidebar = ({ categories, selectedTags, onTagSelect, contentPage, onArchive
                 )
               })
             )
-            :
-            <span className="text-xs">Getting Cats</span>
           }
         </form>
       </div>
