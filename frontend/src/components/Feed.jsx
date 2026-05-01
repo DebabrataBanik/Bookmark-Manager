@@ -11,7 +11,6 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
   const [openId, setOpenId] = useState(null)
   const [deleteId, setDeleteId] = useState(null)
   const [message, setMessage] = useState(null)
-  const [copied, setCopied] = useState(false)
   const [sort, setSort] = useState('')
 
   const optionsRef = useRef(null)
@@ -112,9 +111,6 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
   async function handleCopyUrltoClipboard(url){
     try {
       await navigator.clipboard.writeText(url)
-      setCopied(true)
-
-      setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error('Failed to copy URL: ', error)
     }
@@ -198,9 +194,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
                               onClick={() => handleCopyUrltoClipboard(item.url)}
                             >
                               <ClipboardCopyIcon size={12} />
-                              {
-                                copied ? 'Copied' : 'Copy Url'
-                              }
+                              Copy Url
                             </button>
                             <button
                               type="button"
