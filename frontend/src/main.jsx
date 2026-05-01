@@ -4,6 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ThemeProvider } from './context/ThemeContext'
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,7 +25,9 @@ export const queryClient = new QueryClient({
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} /> 
     </QueryClientProvider>
   </StrictMode>,

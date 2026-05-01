@@ -1,6 +1,11 @@
 import { Bookmark, MenuIcon, PlusIcon, Search, SearchIcon } from 'lucide-react'
+import { ThemeContext } from '../context/ThemeContext'
+import { useContext } from 'react'
 
 const Header = ({ onOpen, onSearchChange, searchInput, setShowSidebar }) => {
+
+  const { toggleTheme } = useContext(ThemeContext)
+
   return (
     <header>
       <a href="/">
@@ -34,7 +39,11 @@ const Header = ({ onOpen, onSearchChange, searchInput, setShowSidebar }) => {
             Add Bookmark
           </span>
         </button>
-        <button type='button' className='user-btn shrink-0'>
+        <button 
+          onClick={toggleTheme}  
+          type='button' 
+          className='user-btn shrink-0'
+        >
           <img src="/user_profiles/user.avif" alt="user headshot" />
         </button>
       </div>
