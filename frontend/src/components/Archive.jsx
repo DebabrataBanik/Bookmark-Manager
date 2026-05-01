@@ -122,14 +122,15 @@ const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
                 const lastVisited = getDate(item.lastVisited)
 
               return (
-                <article ref={openId === item._id ? optionsRef : null} key={item._id}>
+                <article key={item._id}>
                   <div className="flex items-center gap-4 p-4">
                     <Logo domain={item.domain} />
                     <div>
                       <h2 className="font-bold text-lg">{item.title}</h2>
                       <span className="text-xs text-text-secondary">{item.domain}</span>
                     </div>
-                    <button 
+                    <button
+                      ref={openId === item._id ? optionsRef : null}
                       onClick={() => handleToggle(item._id)} type="button" className="modify-btn"
                     >
                       <EllipsisVerticalIcon size={20} />
@@ -160,7 +161,7 @@ const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
 
                   </div>
                   <div className="px-4 text-sm">
-                    <p className="pt-4 ext-sm text-text-secondary border-t border-t-border">{item.description}</p>
+                    <p className="pt-4 ext-sm text-text-secondary border-t border-t-border line-clamp-4">{item.description}</p>
                     <div className="py-4 flex items-center mt-auto gap-2">
                       {
                         item.category.map(tag => <span key={tag} className="tags">{tag}</span>)

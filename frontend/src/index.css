@@ -116,7 +116,7 @@ input[type="search"]::-ms-reveal {
   }
 
   article{
-    @apply border border-border-subtle shadow-sm rounded-lg bg-bg-primary flex flex-col relative max-w-87.5 mx-auto;
+    @apply border border-border-subtle shadow-sm rounded-lg bg-bg-primary flex flex-col relative;
   }
 
   select, ::picker(select) {
@@ -236,7 +236,7 @@ input[type="search"]::-ms-reveal {
   .bookmarks-container{
     margin-top: 1rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
   }
 
