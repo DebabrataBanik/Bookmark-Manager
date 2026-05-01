@@ -37,7 +37,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
 
 
   const { data: bookmarks = [], isLoading, error } = useQuery({
-    queryKey: ['bookmarks', selectedTags, searchInput, sort],
+    queryKey: ['bookmarks', {tags: selectedTags, search: searchInput, sort }],
     queryFn: () => getBookmarks({tags: selectedTags, search: searchInput, sort })
   })
 

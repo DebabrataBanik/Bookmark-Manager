@@ -1,12 +1,23 @@
 import { ArchiveIcon, HomeIcon } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import { getCategories } from "../services/categoryService"
+import { getArchives, getBookmarks } from "../services/bookmarkService"
 
 const Sidebar = ({ selectedTags, onTagSelect, contentPage, onArchiveClick, onHomeClick, showSidebar }) => {  
 
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ['categories'],
     queryFn: getCategories
+  })
+
+  const { data : bookmarks = [] } = useQuery({
+    queryKey: ['bookmarks'],
+    queryFn: getBookmarks
+  })
+
+  const { data: archives = [] } = useQuery({
+    queryKey: ['archives'],
+    queryFn: getArchives
   })
 
   function handleChange(e){
@@ -22,6 +33,7 @@ const Sidebar = ({ selectedTags, onTagSelect, contentPage, onArchiveClick, onHom
       >
         <HomeIcon size={15} />
         Home
+        <span className="count">{bookmarks?.length}</span>
       </button>
       <button 
         onClick={onArchiveClick}
@@ -29,6 +41,7 @@ const Sidebar = ({ selectedTags, onTagSelect, contentPage, onArchiveClick, onHom
       >
         <ArchiveIcon size={15} />
         Archived
+        <span className="count">{archives?.length}</span>
       </button>
 
       <div className="mt-5 px-2">
