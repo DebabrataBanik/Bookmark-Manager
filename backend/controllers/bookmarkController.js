@@ -60,7 +60,7 @@ export async function addBookmark(req, res){
 
     const bookmarkData = {
       url, 
-      title, 
+      title: title || metadata.title || '', 
       description: description || metadata.description || '',
       publisher: metadata.publisher || '',
       author: metadata.author || '',
@@ -144,7 +144,7 @@ export async function updateBookmark(req, res){
 
     const bookmarkData = {
       url, 
-      title, 
+      title: title || (isUrlDifferent ? metadata.title : existing.title), 
       description: description || (isUrlDifferent ? metadata.description : existing.description) || '',
       publisher: isUrlDifferent ? metadata.publisher : existing.publisher,
       author: isUrlDifferent ? metadata.author : existing.author,

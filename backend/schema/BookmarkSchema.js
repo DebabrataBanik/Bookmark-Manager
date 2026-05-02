@@ -5,8 +5,8 @@ export const bookmarkSchema = z.object({
     protocol: /^https?$/,
     hostname: z.regexes.domain
   }),
-  title: z.string().trim().min(3, "Title must be at least 3 characters").max(80, "Title must be under 80 characters"),
-  description: z.string().trim().optional().default(''),
+  title: z.string().trim().optional(),
+  description: z.string().trim().optional(),
   category: z.string().trim().optional().transform(val => {
     if(!val) return []
     const clean = val.split(',').map(tag => tag.trim().toLowerCase()).filter(tag => tag.length > 0)

@@ -72,9 +72,9 @@ const BookmarkForm = ({ onClose, bookmarkData }) => {
       error.url = 'Enter valid url'
     }
 
-    if (data.title.length < 3 || data.title.length > 80) {
-      error.title = 'Title must be 3–80 characters.'
-    }
+    // if (data.title.length < 3 || data.title.length > 80) {
+    //   error.title = 'Title must be 3–80 characters.'
+    // }
     
     if(Object.keys(error).length > 0){
       setError(error)
@@ -114,14 +114,17 @@ const BookmarkForm = ({ onClose, bookmarkData }) => {
   const disabledState = addMutation.isPending || updateMutation.isPending
   const btnText = disabledState
   ? (bookmarkData ? 'Updating...' : 'Adding...')
-  : (bookmarkData ? 'Update' : 'Add')
+  : (bookmarkData ? 'Update Bookmark' : 'Add Bookmark')
 
 
   return (
-    <div className="form-wrapper px-5 sm:p-8">
-      <form onSubmit={handleSubmit} className="bookmark-form gap-1 sm:gap-4">
-        <h1 className="text-lg sm:text-xl font-bold mb-2 mx-2 text-center sm:text-left">Add Bookmark</h1>
-        <div className="h-5 text-center">
+    <div className="form-wrapper px-5 py-6 sm:p-8">
+      <form onSubmit={handleSubmit} className="bookmark-form gap-2 sm:gap-3">
+        <div className="text-center">
+          <h1 className="text-lg sm:text-xl font-bold">Add Bookmark</h1>
+          <p className="text-xs text-text-tertiary mx-5">Paste a URL to auto-fill details or enter them manually. Add your own categories.</p>
+        </div>
+        <div className="text-center">
           {
             error?.message && <span className="text-sm text-center text-error">{error.message}</span>
           }
@@ -129,9 +132,9 @@ const BookmarkForm = ({ onClose, bookmarkData }) => {
             message && <span className="text-sm text-center text-success">{message}</span>
           }
         </div>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <label className="w-full sm:w-1/2 form-label">
-            <span className="ml-1">URL</span>
+        <div className="flex flex-col gap-2">
+          <label className="w-full form-label">
+            <span title="URL is required" className="ml-1">URL<sup className="text-accent">*</sup></span>
             <input 
               type="text" 
               name="url"
@@ -148,22 +151,15 @@ const BookmarkForm = ({ onClose, bookmarkData }) => {
             </span>
           </label>
 
-          <label className="w-full sm:w-1/2 form-label">
+          <label className="w-full form-label">
             <span className="ml-1">Title</span>
             <input 
               type="text" 
               name="title"
               className="form-input my-1"
-              placeholder="e.g. React Docs, CSS Tricks Guide"
-              title="Enter a short, clear title (3–80 characters)."
               value={formData.title}
               onChange={handleChange}
               />
-            <span className="h-4 ml-1 text-xs text-error">
-              {
-                error?.title && error.title
-              }
-            </span>
           </label>
         </div>
 
@@ -172,7 +168,6 @@ const BookmarkForm = ({ onClose, bookmarkData }) => {
           <textarea 
             name="description"
             className="form-input my-1"
-            title="Enter a well described summary for your bookmark."
             value={formData.description}
             onChange={handleChange}
           />
