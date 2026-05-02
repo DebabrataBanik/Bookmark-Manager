@@ -13,7 +13,7 @@ const App = () => {
   const [bookmarkData, setBookmarkData] = useState(null)
   const [contentPage, setContentPage] = useState('home')
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
-  const [showSidebar, setShowSidebar] = useState(true)
+  const [showSidebar, setShowSidebar] = useState(false)
 
   const closeForm = () => {
     setBookmarkData(null)

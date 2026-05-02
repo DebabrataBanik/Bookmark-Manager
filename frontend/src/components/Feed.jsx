@@ -5,6 +5,7 @@ import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 import { getDate } from "../utils/getDate"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { archiveBookmark, deleteBookmark, getBookmarks, pinBookmark, updateBookmarkOnVisit } from "../services/bookmarkService"
+import { useDebounce } from "../hooks/useDebounce"
 
 const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDeleteDialog }) => {
 
@@ -35,10 +36,11 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
     return () => clearTimeout(timer)
   }, [message])
 
+  const debouncedSearchInput = useDebounce(searchInput)
 
   const { data: bookmarks = [], isLoading, error } = useQuery({
-    queryKey: ['bookmarks', {tags: selectedTags, search: searchInput, sort }],
-    queryFn: () => getBookmarks({tags: selectedTags, search: searchInput, sort })
+    queryKey: ['bookmarks', {tags: selectedTags, search: debouncedSearchInput, sort }],
+    queryFn: () => getBookmarks({tags: selectedTags, search: debouncedSearchInput, sort })
   })
 
   const queryClient = useQueryClient()
