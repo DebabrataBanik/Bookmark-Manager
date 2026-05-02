@@ -11,7 +11,7 @@ const bookmarkSchema = new mongoose.Schema(
     date: String,
     category: [String],
     count: { type: Number, default: 0 },
-    lastVisited: { type: Date, default: Date.now },
+    lastVisited: { type: Date, default: null },
     archived: { type: Boolean, default: false },
     pinned: { type: Boolean, default: false }
   },

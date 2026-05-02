@@ -237,7 +237,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
                       </span>
                       <span title="Last visited" className="stat">
                         <Clock4Icon size={12} />
-                        {lastVisited}
+                        {lastVisited || '--'}
                       </span>
                       <span title="Date Added" className="stat">
                         <CalendarIcon size={12} />
