@@ -173,6 +173,8 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
                       <span className="text-xs text-text-secondary font-mono">{item.domain}</span>
                     </div>
                     <button
+                      aria-label="Show options"
+                      aria-expanded={openId}
                       ref={openId === item._id ? optionsRef : null}
                       onClick={() => handleToggle(item._id)} type="button" className="modify-btn"
                     >

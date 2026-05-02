@@ -57,6 +57,7 @@ const App = () => {
           searchInput={searchInput} 
           onSearchChange={handleSearchInputChange}
           setShowSidebar={setShowSidebar}
+          showSidebar={showSidebar}
         />
         
         <div className="main-wrapper">
