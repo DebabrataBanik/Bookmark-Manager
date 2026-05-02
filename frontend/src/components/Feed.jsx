@@ -170,7 +170,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
                     <Logo domain={item.domain} />
                     <div>
                       <h2 className="font-bold text-lg">{item.title}</h2>
-                      <span className="text-xs text-text-secondary">{item.domain}</span>
+                      <span className="text-xs text-text-secondary font-mono">{item.domain}</span>
                     </div>
                     <button
                       ref={openId === item._id ? optionsRef : null}
@@ -225,7 +225,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
                   </div>
                   <div className="px-4 text-sm">
                     <p className="pt-4 ext-sm text-text-secondary border-t border-t-border line-clamp-4">{item.description}</p>
-                    <div className="py-4 flex items-center mt-auto gap-2">
+                    <div className="py-4 flex items-center mt-auto gap-2 font-mono">
                       {
                         item.category.map(tag => <span key={tag} className="tags">{tag}</span>)
                       }

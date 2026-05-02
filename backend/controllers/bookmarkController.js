@@ -3,7 +3,7 @@ import { Bookmark } from "../models/Bookmark.js";
 import mongoose from "mongoose";
 import { bookmarkSchema } from "../schema/BookmarkSchema.js";
 
-function sanitizeData(text){
+function escapeRegex(text){
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
@@ -25,7 +25,7 @@ export async function getBookmarks(req, res){
     }
 
     if(search){
-      const searchStr = sanitizeData(search)
+      const searchStr = escapeRegex(search)
       filter.title = { $regex: searchStr, $options: 'i' }
     }
 

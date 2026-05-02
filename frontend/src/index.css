@@ -42,9 +42,9 @@ input[type="search"]::-ms-reveal {
 }
 
 @theme {
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-serif: "Georgia", "Charter", serif;
-  --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
+  --font-sans: 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Georgia', 'Charter', serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
   --text-xs: 0.6875rem;
   --text-xs--line-height: 1.45;
