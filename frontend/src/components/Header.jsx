@@ -1,10 +1,23 @@
-import { Bookmark, MenuIcon, PlusIcon, Search, SearchIcon, UserIcon } from 'lucide-react'
+import { Bookmark, MenuIcon, MoonIcon, PlusIcon, Search, SearchIcon, SunIcon, UserIcon } from 'lucide-react'
 import { ThemeContext } from '../context/ThemeContext'
-import { useContext } from 'react'
+import { useContext, useState, useEffect, useRef } from 'react'
 
 const Header = ({ onOpen, onSearchChange, searchInput, setShowSidebar, showSidebar }) => {
 
-  const { toggleTheme } = useContext(ThemeContext)
+  const { toggleTheme, isDarkMode } = useContext(ThemeContext)
+  const [showDropdown, setShowDropdown] = useState(false)
+
+  const dropdownRef = useRef(null)
+  
+  useEffect(() => {
+    function handleOutsideClick(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener("click", handleOutsideClick)
+    return () => document.removeEventListener("click", handleOutsideClick)
+  }, [])
 
   return (
     <header>
@@ -49,13 +62,34 @@ const Header = ({ onOpen, onSearchChange, searchInput, setShowSidebar, showSideb
             Add Bookmark
           </span>
         </button>
-        <button 
-          onClick={toggleTheme}  
+        <button
+          ref={dropdownRef}
+          onClick={() => setShowDropdown(prev => !prev)}  
           type='button' 
           className='user-btn shrink-0'
         >
           <UserIcon size={20} />
         </button>
+        {
+          showDropdown && (
+            <div onClick={e => e.stopPropagation()} className='user-dropdown flex flex-col gap-2'>
+              <span className='flex items-center gap-2 border-b border-b-border pb-2'>
+                <UserIcon size={15}/> Guest
+              </span>
+                <button className='flex items-center gap-2'
+                  onClick={toggleTheme}
+                >
+                  {
+                    isDarkMode ? 
+                    <MoonIcon size={15} />
+                    :
+                    <SunIcon size={15} />
+                  }
+                  Theme 
+                </button>
+            </div>
+          )
+        }
       </div>
     </header>
   )
