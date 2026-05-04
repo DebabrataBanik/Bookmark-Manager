@@ -13,7 +13,9 @@ app.use(cors())
 
 app.use(express.json())
 
-await connectDB()
+connectDB()
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.error("MongoDB connection error:", err));
 
 app.use('/api', bookmarkRouter)
 app.use('/api/categories', categoryRouter)
@@ -22,4 +24,6 @@ app.all('/*splat', (req, res) => {
   res.status(404).json({ message: 'Invalid Route' })
 })
 
-app.listen(process.env.PORT, () => console.log(`server at http://localhost:${process.env.PORT}`))
+const PORT = process.env.PORT || 8000
+
+app.listen(PORT, () => console.log(`server at http://localhost:${PORT}`))
