@@ -11,11 +11,12 @@ This system allows users to store bookmarks with minimal effort while maintainin
 ## What it does
 
 - Save any URL with a title, description, and category tags
-- Metadata (publisher, author, date) is scraped automatically on save
+- Metadata (publisher, author, date) is scraped automatically on save using metascraper
 - Filter bookmarks by category tags or search by title
 - Sort by recently added, recently visited, or most visited
 - Pin important bookmarks and archive ones to keep feed clean
 - Visit tracking - every time you open a link, the view count and last visited date update
+- Dark/light mode with system preference detection
 
 ---
 
@@ -31,7 +32,8 @@ This system allows users to store bookmarks with minimal effort while maintainin
 
 - Node.js + Express
 - MongoDB + Mongoose
-- Zod
+- metascraper - URL metadata scraping (title, description, author, publisher, date)
+- Zod - request validation
 
 ---
 
@@ -75,7 +77,7 @@ This system allows users to store bookmarks with minimal effort while maintainin
     │   ├── bookmark.js
     │   └── category.js
     ├── schema/
-    │   └── BookmarkSchema.js     # Zod validation schema
+    │   └── BookmarkSchema.js
     └── server.js
 ```
 
@@ -87,6 +89,7 @@ This system allows users to store bookmarks with minimal effort while maintainin
 
 - Node.js(LTS recommended)
 - A MongoDB connection string (local or [MongoDB Atlas](https://www.mongodb.com/atlas))
+- A Brandfetch client ID for logo fetching — grab a free one at [brandfetch.com](https://brandfetch.com)
 
 ### 1. Clone the repo
 
@@ -108,16 +111,18 @@ Create a `.env` file in the `frontend/` directory:
 
 ```env
 VITE_BASE_URL=http://localhost:8000
-VITE_CLIENT_ID=your_brandfetch_logo_api_key
+VITE_CLIENT_ID=your_brandfetch_client_id
 ```
+
+> `VITE_CLIENT_ID` is used to fetch brand logos via the Brandfetch CDN. Without it, bookmarks will fall back to a letter avatar instead of the site logo.
 
 ### 3. Run the app
 
 ```bash
 # start the backend
-cd backend && npm install && npm start
+cd backend && npm install && npm run dev
 
-# start the frontend
+# start the frontend (in a separate terminal)
 cd frontend && npm install && npm run dev
 ```
 
@@ -157,11 +162,13 @@ Category tags are stored as an array on each bookmark and aggregated on the fly,
 
 TanStack Query handles all server state on the frontend. Mutations automatically invalidate the relevant queries so the feed, archive, and sidebar stay in sync after every action without manual state juggling.
 
+Brand logos are fetched client-side via the Brandfetch CDN using the bookmark's domain. If a logo isn't available or the client ID is missing, a letter avatar is shown as fallback.
+
 ---
 
 ## Known limitations
 
-- No authentication or multi-user support
+- No authentication or multi-user support — anyone with the server URL can hit the API
 - The scraper depends on the target site having proper meta tags. Sites that are JavaScript-rendered or paywalled will return incomplete metadata.
 - No user accounts yet — this is currently a single-user local app.
 
@@ -169,7 +176,7 @@ TanStack Query handles all server state on the frontend. Mutations automatically
 
 ## Further Developments
 
-- **Authentication** — right now there's no user system, anyone with the URL can hit the API
+- **Authentication** — add a user system so the API isn't open
 - **Bulk actions** — select multiple bookmarks to archive or delete at once
 - **Rate limiting** — protect the scrape endpoint from being hammered
 - **Browser extension** — one-click saving from the browser without opening the app
