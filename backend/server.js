@@ -20,8 +20,8 @@ connectDB()
 app.use('/api', bookmarkRouter)
 app.use('/api/categories', categoryRouter)
 
-app.all('/*splat', (req, res) => {
-  res.status(404).json({ message: 'Invalid Route' })
+app.use((req, res) => {
+  res.status(404).json({ message: 'Invalid Route'})
 })
 
 const PORT = process.env.PORT || 8000
