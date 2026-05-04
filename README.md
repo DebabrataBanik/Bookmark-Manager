@@ -37,6 +37,17 @@ This system allows users to store bookmarks with minimal effort while maintainin
 
 ---
 
+## Screenshots
+
+![Dark mode web landing page](<frontend/public/Sample web landing page.png>)
+
+![Light mode filter state](<frontend/public/Light mode web filter state.png>)
+
+## Links
+
+- Live Site: [Visit](https://bookmark-manager-db.vercel.app/)
+- Backend API: [Endpoint](https://bookmark-backend-f5jc.onrender.com/api)
+
 ## Project Structure
 
 ```
