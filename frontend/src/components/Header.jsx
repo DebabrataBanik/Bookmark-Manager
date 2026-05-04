@@ -1,4 +1,4 @@
-import { Bookmark, MenuIcon, PlusIcon, Search, SearchIcon } from 'lucide-react'
+import { Bookmark, MenuIcon, PlusIcon, Search, SearchIcon, UserIcon } from 'lucide-react'
 import { ThemeContext } from '../context/ThemeContext'
 import { useContext } from 'react'
 
@@ -54,12 +54,7 @@ const Header = ({ onOpen, onSearchChange, searchInput, setShowSidebar, showSideb
           type='button' 
           className='user-btn shrink-0'
         >
-          <img
-            width={40}
-            height={40}
-            src="/user_profiles/user.avif" 
-            alt="user headshot" 
-          />
+          <UserIcon size={20} />
         </button>
       </div>
     </header>

@@ -212,19 +212,19 @@ input[type="search"]::-ms-reveal {
 
   .user-btn{
     font-size: var(--text-xs);
-    background-color: var(--color-accent);
-    color: var(--color-accent-subtle);
+    background-color: var(--color-accent-subtle);
+    color: var(--color-accent);
     font-weight: 500;
     border-radius: var(--radius-full);
     height: 40px;
     aspect-ratio: 1;
-    align-self: center;
-    transition: background-color 0.3s ease;
-    overflow: hidden;
-    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
 
     &:hover{
-      background-color: var(--color-accent-hover);
+      color: var(--color-accent-hover);
     }
   }
 
