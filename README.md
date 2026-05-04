@@ -41,15 +41,30 @@ This system allows users to store bookmarks with minimal effort while maintainin
 ├── frontend/
 │   ├── src/
 │       ├── components/
-│       │   ├── Feed.jsx          # Main bookmark feed
-│       │   ├── Archive.jsx       # Archived bookmarks view
-│       │   ├── BookmarkForm.jsx  # Add / edit form
+│       │   ├── Feed.jsx
+│       │   ├── Archive.jsx
+│       │   ├── BookmarkForm.jsx
 │       │   ├── Header.jsx
-│       │   └── Sidebar.jsx       # Tag filters + navigation
-│       └── services/
-│           ├── bookmarkService.js
-│           └── categoryService.js
-│
+│       │   └── Sidebar.jsx
+│       │
+│       ├── context/
+│       │   └── ThemeContext.jsx
+│       │
+│       ├── hooks/
+│       │   └── useDebounce.js
+│       │
+│       ├── services/
+│       │   ├── bookmarkService.js
+│       │   └── categoryService.js
+│       │
+│       ├── utils/
+│       │   └── getData.js
+│       │
+│       ├── App.jsx
+│       ├── main.jsx
+│       ├── index.css
+│       └── tokens.css
+|
 └── backend/
     ├── controllers/
     │   ├── bookmarkController.js
