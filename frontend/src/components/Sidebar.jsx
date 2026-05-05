@@ -29,7 +29,7 @@ const Sidebar = ({ selectedTags, onTagSelect, contentPage, onArchiveClick, onHom
     <aside className={`fixed h-full lg:h-auto z-10 transition-transform duration-300 ${showSidebar ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0`}>
       <button 
         onClick={onHomeClick}
-        className={`flex items-center gap-2 py-1.5 px-2 text-sm rounded-md mb-1 w-full ${contentPage === 'home' ? 'bg-accent-subtle text-accent font-semibold' : ''}`}
+        className={`flex items-center gap-2 py-1.5 px-2 text-sm rounded-md mb-2 w-full ${contentPage === 'home' ? 'bg-accent-subtle text-accent font-semibold' : ''}`}
       >
         <HomeIcon size={15} />
         Home
@@ -46,7 +46,7 @@ const Sidebar = ({ selectedTags, onTagSelect, contentPage, onArchiveClick, onHom
 
       <div className="mt-5 px-2">
         <h3 className="text-xs font-medium">TAGS</h3>
-        <form className="flex flex-col gap-4 mt-2">
+        <form className="flex flex-col gap-5 mt-4">
           {
             isLoading ? 
             <p className="text-xs">Categories loading skeleton</p>
