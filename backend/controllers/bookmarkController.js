@@ -220,12 +220,19 @@ export async function archiveBookmark(req, res){
       return res.status(400).json({ message: 'Invalid ID format' })
     }
 
-    const existingBookmark = await Bookmark.findById(id)
-    if(!existingBookmark){
+    const { state } = req.body
+
+    if(typeof state !== 'boolean'){
+      return res.status(400).json({ message: 'Invalid archived state'})
+    }
+
+    const updatedBookmark = await Bookmark.findByIdAndUpdate(id, 
+      { archived: state },
+      { returnDocument: 'after', runValidators: true }
+    )
+    if(!updateBookmark){
       return res.status(404).json({ message: 'No bookmark found'})
     }
-    existingBookmark.archived = !existingBookmark.archived
-    const updatedBookmark = await existingBookmark.save()
 
     res.status(200).json(updatedBookmark)
 

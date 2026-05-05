@@ -57,13 +57,17 @@ export async function getArchives(){
   return res.json()
 }
 
-export async function restoreBookmark(id){
+export async function setArchive(id, state){
   const res = await fetch(`${BASE_URL}/api/bookmarks/${id}/archive`, {
-    method: 'PATCH'
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ state })
   })
   if(!res.ok){
     const err = await res.json()
-    throw Error(err.message || 'Failed to restore bookmark')
+    throw Error(err.message || 'Failed to update archive state')
   }
   return res.json()
 }
@@ -86,17 +90,6 @@ export async function pinBookmark(id){
   if(!res.ok){
     const data = await res.json()
     throw Error(data.message || 'Failed to pin bookmark')
-  }
-  return res.json()
-}
-
-export async function archiveBookmark(id){
-  const res = await fetch(`${BASE_URL}/api/bookmarks/${id}/archive`, {
-    method: 'PATCH'
-  })
-  if(!res.ok){
-    const data = await res.json()
-    throw Error(data.message || 'Failed to archive bookmark')
   }
   return res.json()
 }

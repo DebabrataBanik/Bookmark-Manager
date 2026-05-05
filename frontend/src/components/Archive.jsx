@@ -4,7 +4,7 @@ import Logo from "./subcomponents/Logo"
 import { EyeIcon, Clock4Icon, CalendarIcon, EllipsisVerticalIcon, TrashIcon, ArchiveRestoreIcon } from 'lucide-react'
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { deleteBookmark, getArchives, restoreBookmark } from "../services/bookmarkService"
+import { deleteBookmark, getArchives, setArchive } from "../services/bookmarkService"
 
 const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
 
@@ -42,7 +42,7 @@ const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
   const queryClient = useQueryClient()
   
   const restoreMutation = useMutation({
-    mutationFn: restoreBookmark,
+    mutationFn: ({id, state}) => setArchive(id, state),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['categories']})
       queryClient.invalidateQueries({ queryKey: ['bookmarks']})
@@ -69,7 +69,7 @@ const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
   })
 
   function handleRestore(id){
-    restoreMutation.mutate(id)
+    restoreMutation.mutate({id, state: false})
   }
 
   function handleDelete(id){

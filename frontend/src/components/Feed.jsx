@@ -4,7 +4,7 @@ import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, Penci
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 import { getDate } from "../utils/getDate"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { archiveBookmark, deleteBookmark, getBookmarks, pinBookmark, updateBookmarkOnVisit } from "../services/bookmarkService"
+import { setArchive, deleteBookmark, getBookmarks, pinBookmark, updateBookmarkOnVisit } from "../services/bookmarkService"
 import { useDebounce } from "../hooks/useDebounce"
 
 const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDeleteDialog }) => {
@@ -56,7 +56,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
   })
 
   const archiveMutation = useMutation({
-    mutationFn: archiveBookmark,
+    mutationFn: ({id, state}) => setArchive(id, state),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookmarks']})
       queryClient.invalidateQueries({ queryKey: ['archives']})
@@ -251,7 +251,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
                     <div className="flex gap-3 items-start">
                       <button
                         title="Archive"
-                        onClick={() => archiveMutation.mutate(item._id)}
+                        onClick={() => archiveMutation.mutate({id:item._id, state: true})}
                       >
                         <ArchiveIcon size={14} />
                       </button>
