@@ -17,7 +17,7 @@ connectDB()
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error("MongoDB connection error:", err));
 
-app.use('/api', bookmarkRouter)
+app.use('/api/bookmarks', bookmarkRouter)
 app.use('/api/categories', categoryRouter)
 
 app.use((req, res) => {

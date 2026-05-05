@@ -1,13 +1,14 @@
 import express from 'express'
-import { addBookmark, getBookmarks, deleteBookmark, updateBookmark, pinBookmark, archiveBookmark, getArchivedBookmarks, updateBookmarkOnVisit } from '../controllers/bookmarkController.js'
+import { addBookmark, getBookmarks, deleteBookmark, updateBookmark, pinBookmark, archiveBookmark, updateBookmarkOnVisit } from '../controllers/bookmarkController.js'
 
 export const bookmarkRouter = express.Router()
 
 bookmarkRouter.get('/', getBookmarks)
-bookmarkRouter.post('/bookmark/add', addBookmark)
-bookmarkRouter.delete('/bookmark/:id', deleteBookmark)
-bookmarkRouter.put('/bookmark/:id', updateBookmark)
-bookmarkRouter.patch('/bookmark/:id', pinBookmark)
-bookmarkRouter.patch('/bookmark/archive/:id', archiveBookmark)
-bookmarkRouter.get('/bookmarks/archive', getArchivedBookmarks)
-bookmarkRouter.patch('/bookmark/:id/visit', updateBookmarkOnVisit)
+bookmarkRouter.post('/', addBookmark)
+
+bookmarkRouter.put('/:id', updateBookmark)
+bookmarkRouter.delete('/:id', deleteBookmark)
+
+bookmarkRouter.patch('/:id/pin', pinBookmark)
+bookmarkRouter.patch('/:id/archive', archiveBookmark)
+bookmarkRouter.patch('/:id/visit', updateBookmarkOnVisit)

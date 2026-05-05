@@ -15,9 +15,9 @@ const sortMap = {
 
 export async function getBookmarks(req, res){
   try {
-    const { category, search, sortBy } = req.query
+    const { category, search, sortBy, archived } = req.query
     let filter = {
-      archived: false
+      archived: archived === 'true'
     }
     if(category){
       const tags = category.split(',')
@@ -229,16 +229,6 @@ export async function archiveBookmark(req, res){
 
     res.status(200).json(updatedBookmark)
 
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({ message: error.message })
-  }
-}
-
-export async function getArchivedBookmarks(req, res){
-  try {
-    const archived = await Bookmark.find({ archived: true }).sort({ createdAt: -1 })
-    res.json(archived)
   } catch (error) {
     console.log(error)
     res.status(500).json({ message: error.message })
