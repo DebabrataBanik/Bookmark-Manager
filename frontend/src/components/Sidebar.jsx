@@ -2,6 +2,7 @@ import { ArchiveIcon, HomeIcon } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import { getCategories } from "../services/categoryService"
 import { getArchives, getBookmarks } from "../services/bookmarkService"
+import CategoriesSkeleton from "./skeletons/CategoriesSkeleton"
 
 const Sidebar = ({ selectedTags, onTagSelect, contentPage, onArchiveClick, onHomeClick, showSidebar }) => {  
 
@@ -46,10 +47,10 @@ const Sidebar = ({ selectedTags, onTagSelect, contentPage, onArchiveClick, onHom
 
       <div className="mt-5 px-2">
         <h3 className="text-xs font-medium">TAGS</h3>
-        <form className="flex flex-col gap-5 mt-4">
+        <form aria-busy={isLoading} className="flex flex-col gap-5 mt-4">
           {
             isLoading ? 
-            <p className="text-xs">Categories loading skeleton</p>
+            <CategoriesSkeleton />
             :
             categories.length > 0 && (
               categories.map(cat => {

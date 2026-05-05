@@ -5,6 +5,7 @@ import { EyeIcon, Clock4Icon, CalendarIcon, EllipsisVerticalIcon, TrashIcon, Arc
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { deleteBookmark, getArchives, setArchive } from "../services/bookmarkService"
+import BookmarksSkeleton from "./skeletons/BookmarksSkeleton"
 
 const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
 
@@ -104,11 +105,11 @@ const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
         }
       </div>
 
-      <section className="bookmarks-container">
+      <section aria-busy={isLoading} className="bookmarks-container">
 
         {
           isLoading ?
-            <p className="text-sm text-text-tertiary">Loading archives...</p>
+            <BookmarksSkeleton />
           :
           !isLoading && error ?
             <p className="text-sm text-error">{error.message}</p>

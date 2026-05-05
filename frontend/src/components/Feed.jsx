@@ -6,6 +6,7 @@ import { getDate } from "../utils/getDate"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { setArchive, deleteBookmark, getBookmarks, pinBookmark, updateBookmarkOnVisit } from "../services/bookmarkService"
 import { useDebounce } from "../hooks/useDebounce"
+import BookmarksSkeleton from "./skeletons/BookmarksSkeleton"
 
 const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDeleteDialog }) => {
 
@@ -13,6 +14,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
   const [deleteId, setDeleteId] = useState(null)
   const [message, setMessage] = useState(null)
   const [sort, setSort] = useState('')
+  const [delayed, setDelayed] = useState(true)
 
   const optionsRef = useRef(null)
 
@@ -123,6 +125,22 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
     onVisitMutation.mutate(id)
   }
 
+  useEffect(() => {
+    let timer
+    if (isLoading) {
+      timer = setTimeout(() => {
+        setDelayed(true)
+      }, 1000)
+    } else {
+      timer = setTimeout(() => {
+        setDelayed(false)
+      }, 0)
+    }
+    return () => clearTimeout(timer)
+  }, [isLoading])
+
+  const loadingText = isLoading ? delayed ? 'This is taking longer than usual...' : 'Loading bookmarks...' : ''
+
   return (
     <main className="p-4 sm:p-8">
       <div className="flex items-center gap-10">
@@ -130,6 +148,9 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
         {
           message && 
           <span className={`text-sm ${message.type === 'success' ? 'text-success' : 'text-error'}`}>{message.text}</span>
+        }
+        {
+          loadingText && <p className="text-sm text-text-tertiary">{loadingText}</p>
         }
         <label className="sort-label">
           <ArrowUpDownIcon aria-hidden='true' className="arrow" size={18} />
@@ -147,13 +168,13 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
         </label>
       </div>
 
-      <section className="bookmarks-container">
+      <section aria-busy={isLoading} className="bookmarks-container">
 
         {
           isLoading ?
-            <p className="text-sm text-text-tertiary">Loading bookmarks...</p>
+            <BookmarksSkeleton />
           :
-          !isLoading && error ?
+          error ?
             <p className="text-sm text-error">{error.message}</p>
           :
           (
@@ -226,7 +247,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
 
                   </div>
                   <div className="px-4 text-sm">
-                    <p className="pt-4 ext-sm text-text-secondary border-t border-t-border line-clamp-4">{item.description}</p>
+                    <p className="pt-4 text-text-secondary border-t border-t-border line-clamp-4">{item.description}</p>
                     <div className="py-4 flex items-center mt-auto gap-2 font-mono">
                       {
                         item.category.map(tag => <span key={tag} className="tags">{tag}</span>)
