@@ -14,7 +14,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
   const [deleteId, setDeleteId] = useState(null)
   const [message, setMessage] = useState(null)
   const [sort, setSort] = useState('')
-  const [delayed, setDelayed] = useState(true)
+  const [delayed, setDelayed] = useState(false)
 
   const optionsRef = useRef(null)
 

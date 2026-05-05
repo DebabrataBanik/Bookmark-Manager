@@ -1,6 +1,6 @@
 const CategoriesSkeleton = () => {
   return (
-    <div aria-hidden='true' className="animate-pulse flex flex-col gap-5">
+    <div aria-hidden='true' className="select-none pointer-events-none animate-pulse flex flex-col gap-5">
       {
         Array.from({ length: 10 }).map((_,idx) => (
         <label key={idx} className="checkbox-label">
