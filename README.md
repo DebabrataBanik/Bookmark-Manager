@@ -143,25 +143,25 @@ The app will be at `http://localhost:5173` or similar and the server at `http://
 
 ## API Reference
 
-| Method   | Endpoint                    | Description                                                    |
-| -------- | --------------------------- | -------------------------------------------------------------- |
-| `GET`    | `/api`                      | Get all bookmarks (supports `?category`, `?search`, `?sortBy`) |
-| `POST`   | `/api/bookmark/add`         | Add a new bookmark                                             |
-| `PUT`    | `/api/bookmark/:id`         | Update a bookmark                                              |
-| `DELETE` | `/api/bookmark/:id`         | Delete a bookmark                                              |
-| `PATCH`  | `/api/bookmark/:id`         | Toggle pin                                                     |
-| `PATCH`  | `/api/bookmark/archive/:id` | Toggle archive                                                 |
-| `GET`    | `/api/bookmarks/archive`    | Get archived bookmarks                                         |
-| `PATCH`  | `/api/bookmark/:id/visit`   | Increment visit count                                          |
-| `GET`    | `/api/categories`           | Get all category tags with counts                              |
+| Method   | Endpoint                     | Description                                                                     |
+| -------- | ---------------------------- | ------------------------------------------------------------------------------- |
+| `GET`    | `/api/bookmarks`             | Get all bookmarks (supports `?category`, `?search`, `?sortBy` `?archived=true`) |
+| `POST`   | `/api/bookmarks`             | Add a new bookmark                                                              |
+| `PUT`    | `/api/bookmarks/:id`         | Update a bookmark                                                               |
+| `DELETE` | `/api/bookmarks/:id`         | Delete a bookmark                                                               |
+| `PATCH`  | `/api/bookmarks/:id/pin`     | Toggle pin                                                                      |
+| `PATCH`  | `/api/bookmarks/:id/archive` | Toggle archive                                                                  |
+| `PATCH`  | `/api/bookmarks/:id/visit`   | Increment visit count                                                           |
+| `GET`    | `/api/categories`            | Get all category tags with counts                                               |
 
-### Query parameters for `GET /api`
+### Query parameters for `GET /api/bookmarks`
 
-| Param      | Type   | Example                    | Description                       |
-| ---------- | ------ | -------------------------- | --------------------------------- |
-| `category` | string | `Design,React`             | Comma-separated tags to filter by |
-| `search`   | string | `tailwind`                 | Searches bookmark titles          |
-| `sortBy`   | string | `add` \| `visit` \| `most` | Sort order                        |
+| Param      | Type    | Example                    | Description                       |
+| ---------- | ------- | -------------------------- | --------------------------------- |
+| `category` | string  | `Design,React`             | Comma-separated tags to filter by |
+| `search`   | string  | `tailwind`                 | Searches bookmark titles          |
+| `sortBy`   | string  | `add` \| `visit` \| `most` | Sort order                        |
+| `archived` | boolean | `true`                     | Returns archived bookmarks        |
 
 ---
 

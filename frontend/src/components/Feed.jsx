@@ -232,6 +232,14 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
                             </button>
                           </div>
                           <div className="p-1 w-full">
+                            <button
+                              type="button"
+                              className="archive-btn"
+                              onClick={() => archiveMutation.mutate({id:item._id, state: true})}
+                            >
+                              <ArchiveIcon size={12} />
+                              Archive
+                            </button>
                             <button 
                               type="button" 
                               className="delete-btn"
@@ -269,21 +277,15 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
                         {dateAdded}
                       </span>
                     </div>
-                    <div className="flex gap-3 items-start">
-                      <button
-                        title="Archive"
-                        onClick={() => archiveMutation.mutate({id:item._id, state: true})}
-                      >
-                        <ArchiveIcon size={14} />
-                      </button>
-                      <button 
-                        onClick={() => pinMutation.mutate(item._id)} 
-                        title="Pin" 
-                        type="button"
-                      >
-                        <PinIcon className={item.pinned ? 'pinned' : ''} size={15} />
-                      </button>
-                    </div>
+                      
+                    <button 
+                      onClick={() => pinMutation.mutate(item._id)} 
+                      title="Pin"
+                      disabled={pinMutation.isPending} 
+                      type="button"
+                    >
+                      <PinIcon className={item.pinned ? 'pinned' : ''} size={15} />
+                    </button>
                   </div>
                 </article>
               )})

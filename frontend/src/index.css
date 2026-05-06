@@ -452,7 +452,7 @@ input[type="search"]::-ms-reveal {
     }
   }
 
-  .edit-btn, .delete-btn, .copy-btn, .visit-btn{
+  .edit-btn, .delete-btn, .copy-btn, .visit-btn, .archive-btn{
     color: var(--color-text-secondary);
     width: 100%;
     border-radius: var(--radius-sm);
@@ -463,7 +463,7 @@ input[type="search"]::-ms-reveal {
     gap: 0.5rem;
   }
   
-  .edit-btn, .copy-btn, .visit-btn{
+  .edit-btn, .copy-btn, .visit-btn, .archive-btn{
     color: var(--color-text-primary);
     padding: 0.35rem;
     padding-inline: 0.5rem 2rem;
