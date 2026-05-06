@@ -48,6 +48,7 @@ const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
       queryClient.invalidateQueries({ queryKey: ['categories']})
       queryClient.invalidateQueries({ queryKey: ['bookmarks']})
       queryClient.invalidateQueries({ queryKey: ['archives']})
+      queryClient.invalidateQueries({ queryKey: ['pinned']})
       handleClose()
       setMessage({ text: data.message, type: 'success' })
     },
@@ -61,6 +62,7 @@ const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['bookmarks']})
       queryClient.invalidateQueries({ queryKey: ['archives']})
+      queryClient.invalidateQueries({ queryKey: ['pinned']})
       handleClose()
       setMessage({ text: data.message, type: 'success' })
     },
@@ -127,7 +129,7 @@ const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
                   <div className="flex items-center gap-4 p-4">
                     <Logo domain={item.domain} />
                     <div>
-                      <h2 className="font-bold text-lg">{item.title}</h2>
+                      <h2 className="font-bold text-lg line-clamp-2">{item.title}</h2>
                       <span className="text-xs text-text-secondary font-mono">{item.domain}</span>
                     </div>
                     <button

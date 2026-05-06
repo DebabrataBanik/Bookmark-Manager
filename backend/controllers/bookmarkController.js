@@ -15,9 +15,12 @@ const sortMap = {
 
 export async function getBookmarks(req, res){
   try {
-    const { category, search, sortBy, archived } = req.query
+    const { category, search, sortBy, archived, pinned } = req.query
     let filter = {
       archived: archived === 'true'
+    }
+    if(pinned){
+      filter.pinned = true
     }
     if(category){
       const tags = category.split(',')

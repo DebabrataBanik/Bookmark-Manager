@@ -4,7 +4,7 @@ import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, Penci
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 import { getDate } from "../utils/getDate"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { setArchive, deleteBookmark, getBookmarks, pinBookmark, updateBookmarkOnVisit } from "../services/bookmarkService"
+import { setArchive, deleteBookmark, getBookmarks, pinBookmark, updateBookmarkOnVisit, getPinnedBookmarks } from "../services/bookmarkService"
 import { useDebounce } from "../hooks/useDebounce"
 import BookmarksSkeleton from "./skeletons/BookmarksSkeleton"
 
@@ -45,12 +45,18 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
     queryFn: () => getBookmarks({tags: selectedTags, search: debouncedSearchInput, sort })
   })
 
+  const { data: pinnedBookmarks = []} = useQuery({
+    queryKey: ['pinned'],
+    queryFn: getPinnedBookmarks
+  })
+
   const queryClient = useQueryClient()
 
   const pinMutation = useMutation({
     mutationFn: pinBookmark,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookmarks']})
+      queryClient.invalidateQueries({ queryKey: ['pinned']})
     },
     onError: (error) => {
       setMessage({ text: error.message, type: 'error' })
@@ -63,6 +69,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
       queryClient.invalidateQueries({ queryKey: ['bookmarks']})
       queryClient.invalidateQueries({ queryKey: ['archives']})
       queryClient.invalidateQueries({ queryKey: ['categories']})
+      queryClient.invalidateQueries({ queryKey: ['pinned']})
     },
     onError: (error) => {
       setMessage({ text: error.message, type: 'error' })
@@ -84,6 +91,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['bookmarks']})
       queryClient.invalidateQueries({ queryKey: ['categories']})
+      queryClient.invalidateQueries({ queryKey: ['pinned']})
       handleClose()
       setMessage({ text: data.message, type: 'success' })
     },
@@ -143,6 +151,27 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
 
   return (
     <main className="p-4 sm:p-8">
+      {
+        pinnedBookmarks?.length > 0 && (
+          <div className="flex gap-2 mb-2"> 
+            {
+              pinnedBookmarks.map(item => (
+                <button
+                  key={item._id}
+                  onClick={() => handleVisit(item.url, item._id)}
+                  aria-label={`Visit ${item.domain}`}
+                  type="button" 
+                  className="pinned-item shadow-sm" 
+                  title="Visit site" 
+                >
+                  <p className="line-clamp-1">{item.title}</p>
+                  <span className="font-mono text-text-tertiary font-normal">{item.domain}</span>
+                </button>
+              ))
+            }
+          </div>
+        )
+      }
       <div className="flex items-center gap-10">
         <h1 className="text-lg font-bold">All bookmarks</h1>
         {
@@ -190,7 +219,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
                   <div className="flex items-center gap-4 p-4">
                     <Logo domain={item.domain} />
                     <div>
-                      <h2 className="font-bold text-lg">{item.title}</h2>
+                      <h2 className="font-bold text-lg line-clamp-2">{item.title}</h2>
                       <span className="text-xs text-text-secondary font-mono">{item.domain}</span>
                     </div>
                     <button
@@ -235,6 +264,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
                             <button
                               type="button"
                               className="archive-btn"
+                              disabled={archiveMutation.isPending}
                               onClick={() => archiveMutation.mutate({id:item._id, state: true})}
                             >
                               <ArchiveIcon size={12} />

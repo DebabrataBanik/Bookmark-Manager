@@ -104,3 +104,12 @@ export async function updateBookmarkOnVisit(id){
   }
   return res.json()
 }
+
+export async function getPinnedBookmarks(){
+  const res = await fetch(`${BASE_URL}/api/bookmarks?pinned=true`)
+  if(!res.ok){
+    const err = await res.json()
+    throw new Error(err.message || 'Failed to get pinned bookmarks')
+  }
+  return res.json()
+}
