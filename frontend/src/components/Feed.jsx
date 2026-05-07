@@ -14,7 +14,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
   const [deleteId, setDeleteId] = useState(null)
   const [message, setMessage] = useState(null)
   const [sort, setSort] = useState('')
-  const [delayed, setDelayed] = useState(false)
+  // const [delayed, setDelayed] = useState(false)
 
   const optionsRef = useRef(null)
 
@@ -147,27 +147,27 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
     }
   }
 
-  useEffect(() => {
-    let timer
-    if (isLoading) {
-      timer = setTimeout(() => {
-        setDelayed(true)
-      }, 1000)
-    } else {
-      timer = setTimeout(() => {
-        setDelayed(false)
-      }, 0)
-    }
-    return () => clearTimeout(timer)
-  }, [isLoading])
+  // useEffect(() => {
+  //   let timer
+  //   if (isLoading) {
+  //     timer = setTimeout(() => {
+  //       setDelayed(true)
+  //     }, 2000)
+  //   } else {
+  //     timer = setTimeout(() => {
+  //       setDelayed(false)
+  //     }, 0)
+  //   }
+  //   return () => clearTimeout(timer)
+  // }, [isLoading])
 
-  const loadingText = isLoading ? delayed ? 'This is taking longer than usual...' : 'Loading bookmarks...' : ''
+  // const loadingText = isLoading ? delayed ? 'This is taking longer than usual...' : 'Loading bookmarks...' : ''
 
   return (
     <main className="p-4 sm:p-8 overflow-hidden">
       {
         pinnedBookmarks?.length > 0 && (
-        <div className="flex items-center mb-4 w-full"> 
+        <div className="flex items-center sm:gap-2 mb-4 w-full"> 
           <ChevronLeftIcon
             role="button"
             tabIndex={0}
@@ -209,9 +209,6 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
         {
           message && 
           <span className={`text-sm ${message.type === 'success' ? 'text-success' : 'text-error'}`}>{message.text}</span>
-        }
-        {
-          loadingText && <p className="text-sm text-text-tertiary">{loadingText}</p>
         }
         <label className="sort-label">
           <ArrowUpDownIcon aria-hidden='true' className="arrow" size={18} />
