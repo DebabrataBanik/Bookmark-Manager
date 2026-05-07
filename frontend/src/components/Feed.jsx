@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react"
 import Logo from "./subcomponents/Logo"
-import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon, ClipboardCopyIcon, ArchiveIcon, ExternalLinkIcon, ArrowUpDownIcon } from 'lucide-react'
+import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon, ClipboardCopyIcon, ArchiveIcon, ExternalLinkIcon, ArrowUpDownIcon, ChevronLeft, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 import { getDate } from "../utils/getDate"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -133,6 +133,20 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
     onVisitMutation.mutate(id)
   }
 
+  const scrollRef = useRef(null)
+
+  function scrollLeft(){
+    if(scrollRef.current){
+      scrollRef.current.scrollBy({ left: -200, behavior: 'smooth' })
+    }
+  }
+
+  function scrollRight(){
+    if(scrollRef.current){
+      scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' })
+    }
+  }
+
   useEffect(() => {
     let timer
     if (isLoading) {
@@ -150,10 +164,19 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
   const loadingText = isLoading ? delayed ? 'This is taking longer than usual...' : 'Loading bookmarks...' : ''
 
   return (
-    <main className="p-4 sm:p-8">
+    <main className="p-4 sm:p-8 overflow-hidden">
       {
         pinnedBookmarks?.length > 0 && (
-          <div className="flex gap-2 mb-2"> 
+        <div className="flex items-center mb-4 w-full"> 
+          <ChevronLeftIcon
+            role="button"
+            tabIndex={0}
+            aria-label="Scroll left"
+            size={15} 
+            className="text-text-tertiary shrink-0 cursor-pointer outline-none hover:text-text-primary focus-visible:text-text-primary transition-colors duration-300"
+            onClick={scrollLeft}
+          />
+          <div ref={scrollRef} className="flex items-center gap-2 overflow-x-scroll whitespace-nowrap scrollbar-none">
             {
               pinnedBookmarks.map(item => (
                 <button
@@ -161,17 +184,26 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
                   onClick={() => handleVisit(item.url, item._id)}
                   aria-label={`Visit ${item.domain}`}
                   type="button" 
-                  className="pinned-item shadow-sm" 
+                  className="max-w-25 sm:max-w-50 pinned-item shadow-sm shrink-0" 
                   title="Visit site" 
                 >
                   <p className="line-clamp-1">{item.title}</p>
-                  <span className="font-mono text-text-tertiary font-normal">{item.domain}</span>
+                  <span className="font-mono text-text-tertiary font-normal line-clamp-1">{item.domain}</span>
                 </button>
               ))
             }
           </div>
-        )
-      }
+          <ChevronRightIcon
+            role="button"
+            tabIndex={0}
+            aria-label="Scroll right"
+            size={15} 
+            className="shrink-0 text-text-tertiary cursor-pointer ml-auto outline-none hover:text-text-primary focus-visible:text-text-primary transition-colors duration-300"
+            onClick={scrollRight}
+          />
+        </div>
+      )}
+
       <div className="flex items-center gap-10">
         <h1 className="text-lg font-bold">All bookmarks</h1>
         {
