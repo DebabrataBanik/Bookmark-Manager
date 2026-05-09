@@ -3,7 +3,7 @@ import { Bookmark } from "../models/Bookmark.js";
 import mongoose from "mongoose";
 import { bookmarkSchema } from "../schema/BookmarkSchema.js";
 
-function escapeRegex(text){
+function escapeRegex(text) {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
@@ -13,21 +13,21 @@ const sortMap = {
   most: { count: -1 }
 }
 
-export async function getBookmarks(req, res){
+export async function getBookmarks(req, res) {
   try {
     const { category, search, sortBy, archived, pinned } = req.query
     let filter = {
       archived: archived === 'true'
     }
-    if(pinned){
+    if (pinned) {
       filter.pinned = true
     }
-    if(category){
+    if (category) {
       const tags = category.split(',')
       filter.category = { $in: tags }
     }
 
-    if(search){
+    if (search) {
       const searchStr = escapeRegex(search)
       filter.title = { $regex: searchStr, $options: 'i' }
     }
@@ -42,11 +42,11 @@ export async function getBookmarks(req, res){
   }
 }
 
-export async function addBookmark(req, res){
+export async function addBookmark(req, res) {
   try {
     const result = bookmarkSchema.safeParse(req.body)
 
-    if(!result.success){
+    if (!result.success) {
       const formatted = result.error.flatten().fieldErrors
       return res.status(400).json(formatted)
     }
@@ -55,15 +55,15 @@ export async function addBookmark(req, res){
 
     const scrapeRes = await scrape(url)
 
-    if(!scrapeRes.success){
+    if (!scrapeRes.success) {
       return res.status(500).json({ message: "Could not scrape data for that url" })
     }
-    
+
     const metadata = scrapeRes.metadata
 
     const bookmarkData = {
-      url, 
-      title: title || metadata.title || '', 
+      url,
+      title: title || metadata.title || '',
       description: description || metadata.description || '',
       publisher: metadata.publisher || '',
       author: metadata.author || '',
@@ -77,8 +77,8 @@ export async function addBookmark(req, res){
     res.status(201).json({ message: 'Bookmark successfully added!', data: savedBookmark })
 
   } catch (error) {
-    if(error.code === 11000){
-      return res.status(409).json({ message: 'Bookmark already exists. '})
+    if (error.code === 11000) {
+      return res.status(409).json({ message: 'Bookmark already exists. ' })
     }
 
     console.log(error)
@@ -86,7 +86,7 @@ export async function addBookmark(req, res){
   }
 }
 
-export async function deleteBookmark(req, res){
+export async function deleteBookmark(req, res) {
   try {
     const { id } = req.params
 
@@ -100,17 +100,17 @@ export async function deleteBookmark(req, res){
       return res.status(404).json({ message: 'Bookmark not found' })
     }
 
-    res.status(200).json({  message: 'Bookmark deleted successfully' })
-    
+    res.status(200).json({ message: 'Bookmark deleted successfully' })
+
   } catch (error) {
     console.log(error)
     res.status(500).json({ message: error.message })
   }
 }
 
-export async function updateBookmark(req, res){
+export async function updateBookmark(req, res) {
   try {
-    const { id }  = req.params
+    const { id } = req.params
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'Invalid ID format' })
@@ -118,7 +118,7 @@ export async function updateBookmark(req, res){
 
     const result = bookmarkSchema.safeParse(req.body)
 
-    if(!result.success){
+    if (!result.success) {
       const formatted = result.error.flatten().fieldErrors
       return res.status(400).json(formatted)
     }
@@ -127,27 +127,27 @@ export async function updateBookmark(req, res){
 
     const existing = await Bookmark.findById(id)
 
-    if(!existing){
+    if (!existing) {
       return res.status(404).json({ message: 'Bookmark not found' })
     }
 
     const isUrlDifferent = existing.url !== url
 
     let metadata = {}
-    
-    if(isUrlDifferent){
+
+    if (isUrlDifferent) {
       const scrapeRes = await scrape(url)
 
-      if(!scrapeRes.success){
+      if (!scrapeRes.success) {
         return res.status(500).json({ message: "Could not scrape data for that url" })
       }
-      
+
       metadata = scrapeRes.metadata
     }
 
     const bookmarkData = {
-      url, 
-      title: title || (isUrlDifferent ? metadata.title : existing.title), 
+      url,
+      title: title || (isUrlDifferent ? metadata.title : existing.title),
       description: description || (isUrlDifferent ? metadata.description : existing.description) || '',
       publisher: isUrlDifferent ? metadata.publisher : existing.publisher,
       author: isUrlDifferent ? metadata.author : existing.author,
@@ -166,7 +166,7 @@ export async function updateBookmark(req, res){
   }
 }
 
-export async function pinBookmark(req, res){
+export async function pinBookmark(req, res) {
   try {
     const { id } = req.params
 
@@ -175,8 +175,8 @@ export async function pinBookmark(req, res){
     }
 
     const existingBookmark = await Bookmark.findById(id)
-    if(!existingBookmark){
-      return res.status(404).json({ message: 'No bookmark found'})
+    if (!existingBookmark) {
+      return res.status(404).json({ message: 'No bookmark found' })
     }
     existingBookmark.pinned = !existingBookmark.pinned
     const updatedBookmark = await existingBookmark.save()
@@ -189,7 +189,7 @@ export async function pinBookmark(req, res){
   }
 }
 
-export async function updateBookmarkOnVisit(req, res){
+export async function updateBookmarkOnVisit(req, res) {
   try {
     const { id } = req.params
 
@@ -198,12 +198,12 @@ export async function updateBookmarkOnVisit(req, res){
     }
 
     const updatedBookmark = await Bookmark.findByIdAndUpdate(id, {
-        $inc: {count: 1},
-        $set: {lastVisited: new Date()}
-      },
+      $inc: { count: 1 },
+      $set: { lastVisited: new Date() }
+    },
       { returnDocument: 'after', runValidators: true }
     )
-    if(!updatedBookmark){
+    if (!updatedBookmark) {
       return res.status(404).json({ message: 'No bookmark found' })
     }
 
@@ -215,7 +215,7 @@ export async function updateBookmarkOnVisit(req, res){
   }
 }
 
-export async function archiveBookmark(req, res){
+export async function archiveBookmark(req, res) {
   try {
     const { id } = req.params
 
@@ -225,16 +225,16 @@ export async function archiveBookmark(req, res){
 
     const { state } = req.body
 
-    if(typeof state !== 'boolean'){
-      return res.status(400).json({ message: 'Invalid archived state'})
+    if (typeof state !== 'boolean') {
+      return res.status(400).json({ message: 'Invalid archived state' })
     }
 
-    const updatedBookmark = await Bookmark.findByIdAndUpdate(id, 
+    const updatedBookmark = await Bookmark.findByIdAndUpdate(id,
       { archived: state },
       { returnDocument: 'after', runValidators: true }
     )
-    if(!updateBookmark){
-      return res.status(404).json({ message: 'No bookmark found'})
+    if (!updatedBookmark) {
+      return res.status(404).json({ message: 'No bookmark found' })
     }
 
     res.status(200).json(updatedBookmark)
