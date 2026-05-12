@@ -247,7 +247,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
                 <article key={item._id}>
                   <div className="flex items-center gap-4 p-4">
                     <Logo domain={item.domain} />
-                    <div>
+                    <div className="min-w-0">
                       <h2 className="font-bold text-lg line-clamp-2">{item.title}</h2>
                       <span className="text-xs text-text-secondary font-mono">{item.domain}</span>
                     </div>
