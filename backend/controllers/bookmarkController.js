@@ -2,6 +2,7 @@ import { scrape } from "../utils/scrapeUrl.js";
 import { Bookmark } from "../models/Bookmark.js";
 import mongoose from "mongoose";
 import { bookmarkSchema } from "../schema/BookmarkSchema.js";
+import sanitizeHtml from "sanitize-html";
 
 function escapeRegex(text) {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -28,6 +29,9 @@ export async function getBookmarks(req, res) {
     }
 
     if (search) {
+      if(search.length > 200){
+        return res.status(400).json({ message: 'Search query too long' })
+      }
       const searchStr = escapeRegex(search)
       filter.title = { $regex: searchStr, $options: 'i' }
     }
@@ -52,6 +56,8 @@ export async function addBookmark(req, res) {
     }
 
     let { url, title, description, category } = result.data
+    const cleanTitle = sanitizeHtml(title || '')
+    const cleanDescription = sanitizeHtml(description || '')
 
     const scrapeRes = await scrape(url)
 
@@ -63,8 +69,8 @@ export async function addBookmark(req, res) {
 
     const bookmarkData = {
       url,
-      title: title || metadata.title || '',
-      description: description || metadata.description || '',
+      title: cleanTitle || metadata.title || '',
+      description: cleanDescription || metadata.description || '',
       publisher: metadata.publisher || '',
       author: metadata.author || '',
       domain: new URL(url).hostname.replace(/^www\./, ''),
@@ -125,6 +131,9 @@ export async function updateBookmark(req, res) {
 
     let { url, title, description, category } = result.data
 
+    const cleanTitle = sanitizeHtml(title || '')
+    const cleanDescription = sanitizeHtml(description || '')
+
     const existing = await Bookmark.findById(id)
 
     if (!existing) {
@@ -147,8 +156,8 @@ export async function updateBookmark(req, res) {
 
     const bookmarkData = {
       url,
-      title: title || (isUrlDifferent ? metadata.title : existing.title),
-      description: description || (isUrlDifferent ? metadata.description : existing.description) || '',
+      title: cleanTitle || (isUrlDifferent ? metadata.title : existing.title),
+      description: cleanDescription || (isUrlDifferent ? metadata.description : existing.description) || '',
       publisher: isUrlDifferent ? metadata.publisher : existing.publisher,
       author: isUrlDifferent ? metadata.author : existing.author,
       domain: isUrlDifferent ? new URL(url).hostname.replace(/^www\./, '') : existing.domain,

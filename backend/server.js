@@ -28,9 +28,7 @@ app.use(cors({
 
 app.use(express.json())
 
-connectDB()
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error("MongoDB connection error:", err));
+await connectDB()
 
 app.use('/api/bookmarks', bookmarkRouter)
 app.use('/api/categories', categoryRouter)
