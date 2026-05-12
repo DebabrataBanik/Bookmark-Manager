@@ -19,6 +19,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "helmet": "^8.1.0",
     "html-get": "^2.22.2",
     "metascraper": "^5.50.1",
     "metascraper-author": "^5.50.1",

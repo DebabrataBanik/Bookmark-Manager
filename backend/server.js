@@ -4,12 +4,27 @@ import { bookmarkRouter } from './routes/bookmark.js'
 import { categoryRouter } from './routes/category.js'
 import { connectDB } from './config/db.js'
 import dotenv from 'dotenv'
+import helmet from 'helmet'
 
 dotenv.config()
 
 const app = express()
+app.use(helmet())
 
-app.use(cors())
+const allowedOrigins = process.env.ALLOWED_ORIGIN?.split(',') || ['http://localhost:5173']
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if(!origin){
+      return callback(null, true)
+    }
+    if(allowedOrigins.includes(origin)){
+      return callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}))
 
 app.use(express.json())
 
@@ -22,6 +37,11 @@ app.use('/api/categories', categoryRouter)
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Invalid Route'})
+})
+
+app.use((err, req, res, next) => {
+  console.error(err)
+  res.status(500).json({ message: 'Internal server error' })
 })
 
 const PORT = process.env.PORT || 8000
