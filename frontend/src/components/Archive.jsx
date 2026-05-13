@@ -3,16 +3,19 @@ import { getDate } from "../utils/getDate"
 import Logo from "./subcomponents/Logo"
 import { TrashIcon, ArchiveRestoreIcon } from 'lucide-react'
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { deleteBookmark, getArchives, setArchive } from "../services/bookmarkService"
+import { useQuery } from "@tanstack/react-query"
+import { getArchives} from "../services/bookmarkService"
 import BookmarksSkeleton from "./skeletons/BookmarksSkeleton"
 import BookmarkCard from "./subcomponents/Bookmark"
+import { useTimedMessage } from "../hooks/useTimedMessage"
+import { useDeleteBookmark } from "../hooks/useDeleteBookmark"
+import { useArchiveMutation } from "../hooks/useArchiveMutation"
 
 const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
 
   const [openId, setOpenId] = useState(null)
-  const [message, setMessage] = useState(null)
   const [deleteId, setDeleteId] = useState(null)
+  const { message, setMessage } = useTimedMessage()
 
   const optionsRef = useRef(null)
 
@@ -26,51 +29,14 @@ const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
     return () => document.removeEventListener("click", handleOutsideClick)
   }, [])
 
-  useEffect(() => {
-    if(!message) return
-
-    const timer = setTimeout(() => {
-      setMessage(null)
-    }, 3000)
-
-    return () => clearTimeout(timer)
-  }, [message])
-
   const { data: archivedBookmarks = [], isLoading, error } = useQuery({
     queryKey: ['archives'],
     queryFn: getArchives
   })
-  
-  const queryClient = useQueryClient()
-  
-  const restoreMutation = useMutation({
-    mutationFn: ({id, state}) => setArchive(id, state),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['categories']})
-      queryClient.invalidateQueries({ queryKey: ['bookmarks']})
-      queryClient.invalidateQueries({ queryKey: ['archives']})
-      queryClient.invalidateQueries({ queryKey: ['pinned']})
-      handleClose()
-      setMessage({ text: data.message, type: 'success' })
-    },
-    onError: (error) => {
-      setMessage({ text: error.message, type: 'error' })
-    }
-  })
 
-  const deleteMutation = useMutation({
-    mutationFn: deleteBookmark,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['bookmarks']})
-      queryClient.invalidateQueries({ queryKey: ['archives']})
-      queryClient.invalidateQueries({ queryKey: ['pinned']})
-      handleClose()
-      setMessage({ text: data.message, type: 'success' })
-    },
-    onError: (error) => {
-      setMessage({ text: error.message, type: 'error' })
-    }
-  })
+  const restoreMutation = useArchiveMutation(handleClose, setMessage)
+
+  const deleteMutation = useDeleteBookmark(handleClose, setMessage)
 
   function handleRestore(id){
     restoreMutation.mutate({id, state: false})

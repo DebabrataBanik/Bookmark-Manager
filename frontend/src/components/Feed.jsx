@@ -4,18 +4,20 @@ import { PinIcon, PencilIcon, TrashIcon, ClipboardCopyIcon, ArchiveIcon, Externa
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 import { getDate } from "../utils/getDate"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { setArchive, deleteBookmark, getBookmarks, pinBookmark, updateBookmarkOnVisit, getPinnedBookmarks } from "../services/bookmarkService"
+import { getBookmarks, pinBookmark, updateBookmarkOnVisit, getPinnedBookmarks } from "../services/bookmarkService"
 import { useDebounce } from "../hooks/useDebounce"
 import BookmarksSkeleton from "./skeletons/BookmarksSkeleton"
 import BookmarkCard from "./subcomponents/Bookmark"
+import { useTimedMessage } from "../hooks/useTimedMessage"
+import { useDeleteBookmark } from "../hooks/useDeleteBookmark"
+import { useArchiveMutation } from "../hooks/useArchiveMutation"
 
 const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDeleteDialog }) => {
 
   const [openId, setOpenId] = useState(null)
   const [deleteId, setDeleteId] = useState(null)
-  const [message, setMessage] = useState(null)
   const [sort, setSort] = useState('')
-  // const [delayed, setDelayed] = useState(false)
+  const { message, setMessage } = useTimedMessage()
 
   const optionsRef = useRef(null)
 
@@ -28,16 +30,6 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
     document.addEventListener("click", handleOutsideClick)
     return () => document.removeEventListener("click", handleOutsideClick)
   }, [])
-
-  useEffect(() => {
-    if(!message) return
-
-    const timer = setTimeout(() => {
-      setMessage(null)
-    }, 3000)
-
-    return () => clearTimeout(timer)
-  }, [message])
 
   const debouncedSearchInput = useDebounce(searchInput)
 
@@ -64,19 +56,6 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
     } 
   })
 
-  const archiveMutation = useMutation({
-    mutationFn: ({id, state}) => setArchive(id, state),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookmarks']})
-      queryClient.invalidateQueries({ queryKey: ['archives']})
-      queryClient.invalidateQueries({ queryKey: ['categories']})
-      queryClient.invalidateQueries({ queryKey: ['pinned']})
-    },
-    onError: (error) => {
-      setMessage({ text: error.message, type: 'error' })
-    }
-  })
-
   const onVisitMutation = useMutation({
     mutationFn: updateBookmarkOnVisit,
     onSuccess: () => {
@@ -87,19 +66,9 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
     }
   })
 
-  const deleteMutation = useMutation({
-    mutationFn: deleteBookmark,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['bookmarks']})
-      queryClient.invalidateQueries({ queryKey: ['categories']})
-      queryClient.invalidateQueries({ queryKey: ['pinned']})
-      handleClose()
-      setMessage({ text: data.message, type: 'success' })
-    },
-    onError: (error) => {
-      setMessage({ text: error.message, type: 'error' })
-    }
-  })
+  const archiveMutation = useArchiveMutation(handleClose, setMessage)
+
+  const deleteMutation = useDeleteBookmark(handleClose, setMessage)
 
   function handleToggle(id){
     setOpenId(prev => prev === id ? null : id)
@@ -147,22 +116,6 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
       scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' })
     }
   }
-
-  // useEffect(() => {
-  //   let timer
-  //   if (isLoading) {
-  //     timer = setTimeout(() => {
-  //       setDelayed(true)
-  //     }, 2000)
-  //   } else {
-  //     timer = setTimeout(() => {
-  //       setDelayed(false)
-  //     }, 0)
-  //   }
-  //   return () => clearTimeout(timer)
-  // }, [isLoading])
-
-  // const loadingText = isLoading ? delayed ? 'This is taking longer than usual...' : 'Loading bookmarks...' : ''
 
   return (
     <main className="p-4 sm:p-8 overflow-hidden">

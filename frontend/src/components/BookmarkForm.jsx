@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import validator from 'validator'
 import { addBookmark, updateBookmark } from "../services/bookmarkService"
+import { useTimedMessage } from "../hooks/useTimedMessage"
 
 const BookmarkForm = ({ onClose, bookmarkData }) => {
   const [formData, setFormData] = useState(() => {
@@ -13,18 +14,7 @@ const BookmarkForm = ({ onClose, bookmarkData }) => {
     }
   })
   const [error, setError] = useState(null)
-  const [message, setMessage] = useState(null)
-
-  useEffect(() => {
-    if(!message) return
-
-    const timer = setTimeout(() => {
-      setMessage(null)
-      onClose()
-    }, 3000)
-
-    return () => clearTimeout(timer)
-  }, [message, onClose])
+  const { message, setMessage } = useTimedMessage(3000, onClose)
 
   const queryClient = useQueryClient()
 
