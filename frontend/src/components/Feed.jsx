@@ -1,12 +1,13 @@
 import { useEffect, useState, useRef } from "react"
 import Logo from "./subcomponents/Logo"
-import { EyeIcon, Clock4Icon, CalendarIcon, PinIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon, ClipboardCopyIcon, ArchiveIcon, ExternalLinkIcon, ArrowUpDownIcon, ChevronLeft, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
+import { PinIcon, PencilIcon, TrashIcon, ClipboardCopyIcon, ArchiveIcon, ExternalLinkIcon, ArrowUpDownIcon,  ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 import { getDate } from "../utils/getDate"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { setArchive, deleteBookmark, getBookmarks, pinBookmark, updateBookmarkOnVisit, getPinnedBookmarks } from "../services/bookmarkService"
 import { useDebounce } from "../hooks/useDebounce"
 import BookmarksSkeleton from "./skeletons/BookmarksSkeleton"
+import BookmarkCard from "./subcomponents/Bookmark"
 
 const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDeleteDialog }) => {
 
@@ -244,99 +245,58 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
                 const lastVisited = getDate(item.lastVisited)
 
               return (
-                <article key={item._id}>
-                  <div className="flex items-center gap-4 p-4">
-                    <Logo domain={item.domain} />
-                    <div className="min-w-0">
-                      <h2 className="font-bold text-lg line-clamp-2">{item.title}</h2>
-                      <span className="text-xs text-text-secondary font-mono">{item.domain}</span>
+                <BookmarkCard key={item._id}>
+                  <BookmarkCard.Header item={item} openId={openId} optionsRef={optionsRef} handleToggle={handleToggle}>
+                    <div className="w-full p-1 border-b border-b-border flex flex-col gap-0.5">
+                      <button 
+                        type="button" 
+                        className="edit-btn"
+                        onClick={() => handleEditClick(item)}
+                      >
+                        <PencilIcon size={12} />
+                        Edit 
+                      </button>
+                      <button
+                        type="button"
+                        className="copy-btn"
+                        onClick={() => handleCopyUrltoClipboard(item.url)}
+                      >
+                        <ClipboardCopyIcon size={12} />
+                        Copy Url
+                      </button>
+                      <button
+                        type="button"
+                        className="visit-btn"
+                        onClick={() => handleVisit(item.url, item._id)}
+                        aria-label={`Visit ${item.domain}`}
+                      >
+                        <ExternalLinkIcon size={12} />
+                        Open Link
+                      </button>
                     </div>
-                    <button
-                      aria-label="Show options"
-                      aria-expanded={openId}
-                      ref={openId === item._id ? optionsRef : null}
-                      onClick={() => handleToggle(item._id)} type="button" className="modify-btn"
-                    >
-                      <EllipsisVerticalIcon size={20} />
-                    </button>
-                    {
-                      openId === item._id && (
-                        <div className='options'>
-                          <div className="w-full p-1 border-b border-b-border flex flex-col gap-0.5">
-                            <button 
-                              type="button" 
-                              className="edit-btn"
-                              onClick={() => handleEditClick(item)}
-                            >
-                              <PencilIcon size={12} />
-                              Edit 
-                            </button>
-                            <button
-                              type="button"
-                              className="copy-btn"
-                              onClick={() => handleCopyUrltoClipboard(item.url)}
-                            >
-                              <ClipboardCopyIcon size={12} />
-                              Copy Url
-                            </button>
-                            <button
-                              type="button"
-                              className="visit-btn"
-                              onClick={() => handleVisit(item.url, item._id)}
-                              aria-label={`Visit ${item.domain}`}
-                            >
-                              <ExternalLinkIcon size={12} />
-                              Open Link
-                            </button>
-                          </div>
-                          <div className="p-1 w-full">
-                            <button
-                              type="button"
-                              className="archive-btn"
-                              disabled={archiveMutation.isPending}
-                              onClick={() => archiveMutation.mutate({id:item._id, state: true})}
-                            >
-                              <ArchiveIcon size={12} />
-                              Archive
-                            </button>
-                            <button 
-                              type="button" 
-                              className="delete-btn"
-                              onClick={() => handleOpenDeleteDialog(item._id)}
-                              >
-                              <TrashIcon size={12} /> 
-                              Delete 
-                            </button>
-                          </div>
-                        </div>
-                      )
-                    }
-
-                  </div>
-                  <div className="px-4 text-sm">
-                    <p className="pt-4 text-text-secondary border-t border-t-border line-clamp-4">{item.description}</p>
-                    <div className="py-4 flex items-center mt-auto gap-2 font-mono">
-                      {
-                        item.category.map(tag => <span key={tag} className="tags">{tag}</span>)
-                      }
+                    <div className="p-1 w-full">
+                      <button
+                        type="button"
+                        className="archive-btn"
+                        disabled={archiveMutation.isPending}
+                        onClick={() => archiveMutation.mutate({id:item._id, state: true})}
+                      >
+                        <ArchiveIcon size={12} />
+                        Archive
+                      </button>
+                      <button 
+                        type="button" 
+                        className="delete-btn"
+                        disabled={deleteMutation.isPending}
+                        onClick={() => handleOpenDeleteDialog(item._id)}
+                        >
+                        <TrashIcon size={12} /> 
+                        Delete 
+                      </button>
                     </div>
-                  </div>
-                  <div className="article-footer">
-                    <div className="flex items-center gap-5">
-                      <span title="View count" className="stat">
-                        <EyeIcon size={12} />
-                        {item.count}
-                      </span>
-                      <span title="Last visited" className="stat">
-                        <Clock4Icon size={12} />
-                        {lastVisited || '--'}
-                      </span>
-                      <span title="Date Added" className="stat">
-                        <CalendarIcon size={12} />
-                        {dateAdded}
-                      </span>
-                    </div>
-                      
+                  </BookmarkCard.Header>
+                  <BookmarkCard.Details item={item} />
+                  <BookmarkCard.Footer item={item} lastVisited={lastVisited} dateAdded={dateAdded}>
                     <button 
                       onClick={() => pinMutation.mutate(item._id)} 
                       title="Pin"
@@ -345,8 +305,8 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
                     >
                       <PinIcon className={item.pinned ? 'pinned' : ''} size={15} />
                     </button>
-                  </div>
-                </article>
+                  </BookmarkCard.Footer>
+                </BookmarkCard>
               )})
             )
           )
@@ -354,7 +314,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
       </section>
       {
         openDeleteDialog && ( 
-          <ConfirmDeleteDialog onDelete={() => deleteMutation.mutate(deleteId)} onClose={handleClose}>
+          <ConfirmDeleteDialog disabled={deleteMutation.isPending} onDelete={() => deleteMutation.mutate(deleteId)} onClose={handleClose}>
             This will permanently delete this bookmark. You can archive this instead of deleting.
           </ConfirmDeleteDialog>
         ) 

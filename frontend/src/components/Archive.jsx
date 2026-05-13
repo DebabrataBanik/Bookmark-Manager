@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from "react"
 import { getDate } from "../utils/getDate"
 import Logo from "./subcomponents/Logo"
-import { EyeIcon, Clock4Icon, CalendarIcon, EllipsisVerticalIcon, TrashIcon, ArchiveRestoreIcon } from 'lucide-react'
+import { TrashIcon, ArchiveRestoreIcon } from 'lucide-react'
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { deleteBookmark, getArchives, setArchive } from "../services/bookmarkService"
 import BookmarksSkeleton from "./skeletons/BookmarksSkeleton"
+import BookmarkCard from "./subcomponents/Bookmark"
 
 const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
 
@@ -125,69 +126,31 @@ const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
                 const lastVisited = getDate(item.lastVisited)
 
               return (
-                <article key={item._id}>
-                  <div className="flex items-center gap-4 p-4">
-                    <Logo domain={item.domain} />
-                    <div>
-                      <h2 className="font-bold text-lg line-clamp-2">{item.title}</h2>
-                      <span className="text-xs text-text-secondary font-mono">{item.domain}</span>
+                <BookmarkCard key={item._id}>
+                  <BookmarkCard.Header item={item} openId={openId} optionsRef={optionsRef} handleToggle={handleToggle}>
+                    <div className='p-1 gap-1'>
+                      <button
+                        type="button"
+                        className="visit-btn"
+                        disabled={isMutating}
+                        onClick={() => handleRestore(item._id)}
+                      >
+                        <ArchiveRestoreIcon size={12} />
+                        Restore
+                      </button>
+                      <button 
+                        type="button" 
+                        className="delete-btn"
+                        onClick={() => handleOpenDeleteDialog(item._id)}
+                        >
+                        <TrashIcon size={12} /> 
+                        Delete 
+                      </button>
                     </div>
-                    <button
-                      ref={openId === item._id ? optionsRef : null}
-                      onClick={() => handleToggle(item._id)} type="button" className="modify-btn"
-                    >
-                      <EllipsisVerticalIcon size={20} />
-                    </button>
-                    {
-                      openId === item._id && (
-                        <div className='options p-1 gap-1'>
-                            <button
-                              type="button"
-                              className="visit-btn"
-                              disabled={isMutating}
-                              onClick={() => handleRestore(item._id)}
-                            >
-                              <ArchiveRestoreIcon size={12} />
-                              Restore
-                            </button>
-                            <button 
-                              type="button" 
-                              className="delete-btn"
-                              onClick={() => handleOpenDeleteDialog(item._id)}
-                              >
-                              <TrashIcon size={12} /> 
-                              Delete 
-                            </button>
-                        </div>
-                      )
-                    }
-
-                  </div>
-                  <div className="px-4 text-sm">
-                    <p className="pt-4 ext-sm text-text-secondary border-t border-t-border line-clamp-4">{item.description}</p>
-                    <div className="py-4 flex items-center mt-auto gap-2 font-mono">
-                      {
-                        item.category.map(tag => <span key={tag} className="tags">{tag}</span>)
-                      }
-                    </div>
-                  </div>
-                  <div className="article-footer">
-                    <div className="flex items-center gap-5">
-                      <span title="View count" className="stat">
-                        <EyeIcon size={12} />
-                        {item.count}
-                      </span>
-                      <span title="Last visited" className="stat">
-                        <Clock4Icon size={12} />
-                        {lastVisited}
-                      </span>
-                      <span title="Date Added" className="stat">
-                        <CalendarIcon size={12} />
-                        {dateAdded}
-                      </span>
-                    </div>
-                  </div>
-                </article>
+                  </BookmarkCard.Header>
+                  <BookmarkCard.Details  item={item} />
+                  <BookmarkCard.Footer item={item} lastVisited={lastVisited} dateAdded={dateAdded} />
+                </BookmarkCard>
               )})
             )
           )
