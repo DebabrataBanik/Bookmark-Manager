@@ -38,6 +38,14 @@ const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
   const isMutating =
   restoreMutation.isPending || deleteMutation.isPending
 
+  if(error) {
+    return (
+      <main className="p-4 sm:p-8">
+        <p className="text-error mx-auto text-center w-80">{error.message}</p>
+      </main>
+    )
+  }
+
   return (
     <main className="p-4 sm:p-8">
       <div className="flex items-center gap-10">
@@ -53,9 +61,6 @@ const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
         {
           isLoading ?
             <BookmarksSkeleton />
-          :
-          !isLoading && error ?
-            <p className="text-sm text-error">{error.message}</p>
           :
           (
             archivedBookmarks.length === 0 ? <p className="text-sm text-text-tertiary">Nothing to show.</p>

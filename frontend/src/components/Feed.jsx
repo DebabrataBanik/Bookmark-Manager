@@ -91,6 +91,14 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
     }
   }
 
+  if(error) {
+    return (
+      <main className="p-4 sm:p-8">
+        <p className="text-error mx-auto text-center w-80">{error.message}</p>
+      </main>
+    )
+  }
+
   return (
     <main className="p-4 sm:p-8 overflow-hidden">
       {
@@ -159,9 +167,6 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
         {
           isLoading ?
             <BookmarksSkeleton />
-          :
-          error ?
-            <p className="text-sm text-error">{error.message}</p>
           :
           (
             bookmarks.length === 0 ? <p className="text-sm text-text-tertiary">No bookmarks to show.</p>

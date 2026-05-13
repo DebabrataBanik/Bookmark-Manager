@@ -1,12 +1,19 @@
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
 async function bookmarkRequest(endpoint, options = {}){
-  const res = await fetch(`${BASE_URL}${endpoint}`, options)
-  if(!res.ok){
-    const err = await res.json()
-    throw new Error(err.message || 'Bookmark request failed')
+  try {
+    const res = await fetch(`${BASE_URL}${endpoint}`, options)
+    if(!res.ok){
+      const err = await res.json()
+      throw new Error(err.message || 'Bookmark request failed')
+    }
+    return res.json()
+  } catch (error) {
+    if(error instanceof TypeError && error.message === 'Failed to fetch'){
+      throw new Error('Cannot connect to the server. Please check your internet connection and try again.')
+    }
+    throw error
   }
-  return res.json()
 }
 
 export async function getBookmarks({tags, search, sort}){ 
