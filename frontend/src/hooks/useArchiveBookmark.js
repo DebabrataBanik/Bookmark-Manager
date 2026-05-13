@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { setArchive } from "../services/bookmarkService";
 
-export function useArchiveMutation(handleClose, setMessage) {
+export function useArchiveBookmark(handleClose, setMessage) {
   const queryClient = useQueryClient()
 
   const archiveMutation = useMutation({

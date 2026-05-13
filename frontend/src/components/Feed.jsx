@@ -10,7 +10,7 @@ import BookmarksSkeleton from "./skeletons/BookmarksSkeleton"
 import BookmarkCard from "./subcomponents/Bookmark"
 import { useTimedMessage } from "../hooks/useTimedMessage"
 import { useDeleteBookmark } from "../hooks/useDeleteBookmark"
-import { useArchiveMutation } from "../hooks/useArchiveMutation"
+import { useArchiveBookmark } from "../hooks/useArchiveBookmark"
 import { useOptions } from "../hooks/useOptions"
 import { useDeleteDialog } from "../hooks/useDeleteDialog"
 
@@ -56,7 +56,7 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
     }
   })
 
-  const archiveMutation = useArchiveMutation(handleClose, setMessage)
+  const archiveMutation = useArchiveBookmark(handleClose, setMessage)
 
   const deleteMutation = useDeleteBookmark(handleClose, setMessage)
 
