@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react"
+import { useState, useRef } from "react"
 import Logo from "./subcomponents/Logo"
 import { PinIcon, PencilIcon, TrashIcon, ClipboardCopyIcon, ArchiveIcon, ExternalLinkIcon, ArrowUpDownIcon,  ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 import ConfirmDeleteDialog from "./subcomponents/ConfirmDeleteDialog"
@@ -11,25 +11,15 @@ import BookmarkCard from "./subcomponents/Bookmark"
 import { useTimedMessage } from "../hooks/useTimedMessage"
 import { useDeleteBookmark } from "../hooks/useDeleteBookmark"
 import { useArchiveMutation } from "../hooks/useArchiveMutation"
+import { useOptions } from "../hooks/useOptions"
+import { useDeleteDialog } from "../hooks/useDeleteDialog"
 
 const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDeleteDialog }) => {
 
-  const [openId, setOpenId] = useState(null)
-  const [deleteId, setDeleteId] = useState(null)
   const [sort, setSort] = useState('')
   const { message, setMessage } = useTimedMessage()
-
-  const optionsRef = useRef(null)
-
-  useEffect(() => {
-    function handleOutsideClick(e) {
-      if (optionsRef.current && !optionsRef.current.contains(e.target)) {
-        setOpenId(null)
-      }
-    }
-    document.addEventListener("click", handleOutsideClick)
-    return () => document.removeEventListener("click", handleOutsideClick)
-  }, [])
+  const { openId, optionsRef, handleToggle } = useOptions()
+  const { deleteId, handleOpenDeleteDialog, handleClose } = useDeleteDialog(setOpenDeleteDialog)
 
   const debouncedSearchInput = useDebounce(searchInput)
 
@@ -70,24 +60,8 @@ const Feed = ({ searchInput, selectedTags, onOpen, openDeleteDialog, setOpenDele
 
   const deleteMutation = useDeleteBookmark(handleClose, setMessage)
 
-  function handleToggle(id){
-    setOpenId(prev => prev === id ? null : id)
-  }
-
-  function handleOpenDeleteDialog(id){
-    setOpenDeleteDialog(true)
-    setDeleteId(id)
-  } 
-
-  function handleClose(){
-    setOpenDeleteDialog(false)
-    setDeleteId(null)
-    setOpenId(null)
-  }
-
   function handleEditClick(item){
     onOpen(item)
-    setOpenId(null)
   }
 
   async function handleCopyUrltoClipboard(url){

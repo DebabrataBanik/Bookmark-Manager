@@ -1,4 +1,3 @@
-import { useEffect, useState, useRef } from "react"
 import { getDate } from "../utils/getDate"
 import Logo from "./subcomponents/Logo"
 import { TrashIcon, ArchiveRestoreIcon } from 'lucide-react'
@@ -10,24 +9,14 @@ import BookmarkCard from "./subcomponents/Bookmark"
 import { useTimedMessage } from "../hooks/useTimedMessage"
 import { useDeleteBookmark } from "../hooks/useDeleteBookmark"
 import { useArchiveMutation } from "../hooks/useArchiveMutation"
+import { useOptions } from "../hooks/useOptions"
+import { useDeleteDialog } from "../hooks/useDeleteDialog"
 
 const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
 
-  const [openId, setOpenId] = useState(null)
-  const [deleteId, setDeleteId] = useState(null)
   const { message, setMessage } = useTimedMessage()
-
-  const optionsRef = useRef(null)
-
-  useEffect(() => {
-    function handleOutsideClick(e) {
-      if (optionsRef.current && !optionsRef.current.contains(e.target)) {
-        setOpenId(null)
-      }
-    }
-    document.addEventListener("click", handleOutsideClick)
-    return () => document.removeEventListener("click", handleOutsideClick)
-  }, [])
+  const { openId, optionsRef, handleToggle } = useOptions()
+  const { deleteId, handleOpenDeleteDialog, handleClose } = useDeleteDialog(setOpenDeleteDialog)
 
   const { data: archivedBookmarks = [], isLoading, error } = useQuery({
     queryKey: ['archives'],
@@ -45,21 +34,6 @@ const Archive = ({ openDeleteDialog, setOpenDeleteDialog }) => {
   function handleDelete(id){
     deleteMutation.mutate(id)
   }
-
-  function handleClose(){
-    setOpenDeleteDialog(false)
-    setOpenId(null)
-    setDeleteId(null)
-  }
-
-  function handleToggle(id){
-    setOpenId(prev => prev === id ? null : id)
-  }
-
-  function handleOpenDeleteDialog(id){
-    setDeleteId(id)
-    setOpenDeleteDialog(true)
-  } 
 
   const isMutating =
   restoreMutation.isPending || deleteMutation.isPending
