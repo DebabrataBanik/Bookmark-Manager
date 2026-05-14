@@ -21,7 +21,7 @@ export async function getBookmarks(req, res) {
       archived: archived === 'true'
     }
     if (pinned) {
-      filter.pinned = true
+      filter.pinned = pinned === 'true'
     }
     if (category) {
       const tags = category.split(',')
@@ -62,7 +62,7 @@ export async function addBookmark(req, res) {
     const scrapeRes = await scrape(url)
 
     if (!scrapeRes.success) {
-      return res.status(500).json({ message: "Could not scrape data for that url" })
+      return res.status(422).json({ message: "Invalid URL or unable to scrape metadata" })
     }
 
     const metadata = scrapeRes.metadata
