@@ -192,7 +192,7 @@ input[type="search"]::-ms-reveal {
     }
 
     &:focus-visible{
-      outline: 1px solid var(--color-text-secondary);
+      outline: 1px solid var(--color-bg-tertiary);
     }
   }
 

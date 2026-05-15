@@ -8,6 +8,7 @@ const Header = ({ onOpen, onSearchChange, searchInput, setShowSidebar, showSideb
   const [showDropdown, setShowDropdown] = useState(false)
 
   const dropdownRef = useRef(null)
+  const searchRef = useRef(null)
   
   useEffect(() => {
     function handleOutsideClick(e) {
@@ -17,6 +18,17 @@ const Header = ({ onOpen, onSearchChange, searchInput, setShowSidebar, showSideb
     }
     document.addEventListener("click", handleOutsideClick)
     return () => document.removeEventListener("click", handleOutsideClick)
+  }, [])
+
+  useEffect(() => {
+    function focusInput(e){
+      if(searchRef.current && e.key === '/'){
+        e.preventDefault()
+        searchRef.current.focus()
+      }
+    }
+    document.addEventListener('keydown', focusInput)
+    return () => document.removeEventListener('keydown', focusInput)
   }, [])
 
   return (
@@ -42,7 +54,8 @@ const Header = ({ onOpen, onSearchChange, searchInput, setShowSidebar, showSideb
         </button>
         <label className='relative flex items-center mr-auto w-96'>
           <SearchIcon className='search-icon' aria-hidden='true' size={15} />
-          <input 
+          <input
+            ref={searchRef}
             type="search"
             name='search'
             placeholder='Search by title...'
@@ -50,6 +63,7 @@ const Header = ({ onOpen, onSearchChange, searchInput, setShowSidebar, showSideb
             value={searchInput}
             onChange={(e) => onSearchChange(e.target.value)}
           />
+          <span className='absolute right-2 border border-border rounded-sm px-2 bg-bg-primary text-text-tertiary'>/</span>
         </label>
         <button 
           aria-label='Add Bookmark'
