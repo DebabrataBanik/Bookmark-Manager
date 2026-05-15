@@ -1,10 +1,10 @@
 import express from 'express'
-import { addBookmark, getBookmarks, deleteBookmark, updateBookmark, pinBookmark, archiveBookmark, updateBookmarkOnVisit } from '../controllers/bookmarkController.js'
+import { createBookmark, getBookmarks, deleteBookmark, updateBookmark, pinBookmark, archiveBookmark, updateBookmarkOnVisit } from '../controllers/bookmarkController.js'
 
 export const bookmarkRouter = express.Router()
 
 bookmarkRouter.get('/', getBookmarks)
-bookmarkRouter.post('/', addBookmark)
+bookmarkRouter.post('/', createBookmark)
 
 bookmarkRouter.put('/:id', updateBookmark)
 bookmarkRouter.delete('/:id', deleteBookmark)
