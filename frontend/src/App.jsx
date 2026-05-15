@@ -48,7 +48,7 @@ const App = () => {
     <div className="wrapper">
 
       <div
-        inert={showBookmarkForm || openDeleteDialog ? "" : undefined}
+        inert={showBookmarkForm || openDeleteDialog}
         className={`flex flex-col grow ${showBookmarkForm ? 'blur-sm pointer-events-none select-none' : ''}`}
       >
 
