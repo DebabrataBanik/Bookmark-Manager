@@ -54,6 +54,8 @@ This system allows users to store bookmarks with minimal effort while maintainin
 ├── frontend/
 │   ├── src/
 │       ├── components/
+│       │   ├── skeletons/
+│       │   ├── subcomponents/
 │       │   ├── Feed.jsx
 │       │   ├── Archive.jsx
 │       │   ├── BookmarkForm.jsx
@@ -64,7 +66,11 @@ This system allows users to store bookmarks with minimal effort while maintainin
 │       │   └── ThemeContext.jsx
 │       │
 │       ├── hooks/
-│       │   └── useDebounce.js
+│       │   ├── useDebounce.js
+│       │   ├── useArchiveBookmark.js
+│       │   ├── useDeleteBookmark.js
+│       │   ├── useOptions.js
+│       │   └── useTimedMessage.js
 │       │
 │       ├── services/
 │       │   ├── bookmarkService.js
@@ -79,17 +85,36 @@ This system allows users to store bookmarks with minimal effort while maintainin
 │       └── tokens.css
 |
 └── backend/
+    ├── config/
+    │   └── db.js
+    │
     ├── controllers/
     │   ├── bookmarkController.js
     │   └── categoryController.js
+    │
+    ├── middleware/
+    │   └── bookmarkValidation.js
+    │
+    ├── services/
+    │   ├── bookmarkService.js
+    │   └── categoryService.js
+    │
     ├── models/
     │   └── Bookmark.js
+    │
     ├── routes/
     │   ├── bookmark.js
     │   └── category.js
+    │
     ├── schema/
     │   └── BookmarkSchema.js
-    └── server.js
+    │
+    ├── utils/
+    │   ├── ApiError.js
+    │   └── scrapeUrl.js
+    │
+    ├── server.js
+    └── .env
 ```
 
 ---
@@ -143,25 +168,26 @@ The app will be at `http://localhost:5173` or similar and the server at `http://
 
 ## API Reference
 
-| Method   | Endpoint                     | Description                                                                     |
-| -------- | ---------------------------- | ------------------------------------------------------------------------------- |
-| `GET`    | `/api/bookmarks`             | Get all bookmarks (supports `?category`, `?search`, `?sortBy` `?archived=true`) |
-| `POST`   | `/api/bookmarks`             | Add a new bookmark                                                              |
-| `PUT`    | `/api/bookmarks/:id`         | Update a bookmark                                                               |
-| `DELETE` | `/api/bookmarks/:id`         | Delete a bookmark                                                               |
-| `PATCH`  | `/api/bookmarks/:id/pin`     | Toggle pin                                                                      |
-| `PATCH`  | `/api/bookmarks/:id/archive` | Toggle archive                                                                  |
-| `PATCH`  | `/api/bookmarks/:id/visit`   | Increment visit count                                                           |
-| `GET`    | `/api/categories`            | Get all category tags with counts                                               |
+| Method   | Endpoint                     | Description                                                                                      |
+| -------- | ---------------------------- | ------------------------------------------------------------------------------------------------ |
+| `GET`    | `/api/bookmarks`             | Get all bookmarks (supports `?category`, `?search`, `?sortBy`, `?archived=true`, `?pinned=true`) |
+| `POST`   | `/api/bookmarks`             | Add a new bookmark                                                                               |
+| `PUT`    | `/api/bookmarks/:id`         | Update a bookmark                                                                                |
+| `DELETE` | `/api/bookmarks/:id`         | Delete a bookmark                                                                                |
+| `PATCH`  | `/api/bookmarks/:id/pin`     | Toggle pin                                                                                       |
+| `PATCH`  | `/api/bookmarks/:id/archive` | Toggle archive                                                                                   |
+| `PATCH`  | `/api/bookmarks/:id/visit`   | Increment visit count                                                                            |
+| `GET`    | `/api/categories`            | Get all category tags with counts                                                                |
 
 ### Query parameters for `GET /api/bookmarks`
 
-| Param      | Type    | Example                    | Description                       |
-| ---------- | ------- | -------------------------- | --------------------------------- |
-| `category` | string  | `Design,React`             | Comma-separated tags to filter by |
-| `search`   | string  | `tailwind`                 | Searches bookmark titles          |
-| `sortBy`   | string  | `add` \| `visit` \| `most` | Sort order                        |
-| `archived` | boolean | `true`                     | Returns archived bookmarks        |
+| Param      | Type   | Example                    | Description                       |
+| ---------- | ------ | -------------------------- | --------------------------------- |
+| `category` | string | `Design,React`             | Comma-separated tags to filter by |
+| `search`   | string | `tailwind`                 | Searches bookmark titles          |
+| `sortBy`   | string | `add` \| `visit` \| `most` | Sort order                        |
+| `archived` | string | `true`                     | Returns archived bookmarks        |
+| `pinned`   | string | `true`                     | Returns pinned bookmarks          |
 
 ---
 
