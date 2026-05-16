@@ -38,13 +38,13 @@ app.use((req, res) => {
 })
 
 app.use((err, req, res, next) => {
-  console.error(err)
   if(err.code === 11000){
     return res.status(409).json({ message: 'Bookmark already exists'})
   }
   const status = err.statusCode || 500
-  const clientMessage = status === 500 ? 'Internal server error' : err.message
-  res.status(status).json({ message: clientMessage })
+  const message = err.isOperational ? err.message : 'Internal server error'
+  if(status === 500) console.error(err)
+  res.status(status).json({ message })
 })
 
 const PORT = process.env.PORT || 8000
