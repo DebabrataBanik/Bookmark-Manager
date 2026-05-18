@@ -6,7 +6,8 @@ export function validateBody(req, res, next){
   
   if (!result.success) {
     const formatted = result.error.flatten().fieldErrors
-    return res.status(400).json(formatted)
+    const message = Object.values(formatted).flat().join(', ')
+    return res.status(400).json({ message })
   }
   req.validatedBody = result.data
   next()
