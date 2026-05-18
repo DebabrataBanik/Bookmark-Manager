@@ -44,19 +44,9 @@ export async function createBookmark({url, title, description, category}){
   const cleanDescription = sanitizeHtml(description || '')
 
   const scrapeRes = await scrape(url)
+  const metadata = scrapeRes.success ? scrapeRes.metadata : {}
 
-  if (!scrapeRes.success) {
-    throw new ApiError(422, 'Unable to fetch metadata for that URL')
-  }
-
-  const metadata = scrapeRes.metadata
-
-  let domain = ''
-  try {
-    domain = new URL(url).hostname.replace(/^www\./, '')
-  } catch (error) {
-    throw new ApiError(400, 'Invalid URL format')
-  }
+  let domain = new URL(url).hostname.replace(/^www\./, '')
 
   return Bookmark.create({
     url,
@@ -87,21 +77,12 @@ export async function updateBookmark({id, url, title, description, category}){
 
   if (isUrlDifferent) {
     const scrapeRes = await scrape(url)
-
-    if (!scrapeRes.success) {
-      throw new ApiError(422, 'Unable to fetch metadata for that URL')
-    }
-
-    metadata = scrapeRes.metadata
+    metadata = scrapeRes.success ? scrapeRes.metadata : {}
   }
 
   let domain = existing.domain
   if(isUrlDifferent){
-    try {
-      domain = new URL(url).hostname.replace(/^www\./, '')
-    } catch (error) {
-      throw new ApiError(400, 'Invalid URL format')
-    }
+    domain = new URL(url).hostname.replace(/^www\./, '')
   }
 
   const bookmarkData = {
