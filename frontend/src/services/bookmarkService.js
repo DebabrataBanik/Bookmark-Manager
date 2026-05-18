@@ -7,6 +7,9 @@ async function bookmarkRequest(endpoint, options = {}){
       const err = await res.json()
       throw new Error(err.message || 'Bookmark request failed')
     }
+    if(res.status === 204 || res.headers.get('content-length') === '0'){
+      return null
+    }
     return res.json()
   } catch (error) {
     if(error instanceof TypeError && error.message === 'Failed to fetch'){

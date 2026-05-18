@@ -114,7 +114,7 @@ export async function pinBookmark(id){
     throw new ApiError(404, 'No bookmark found')
   }
   existingBookmark.pinned = !existingBookmark.pinned
-  return existingBookmark.save()
+  await existingBookmark.save()
 }
 
 export async function updateBookmarkOnVisit(id){
@@ -127,7 +127,6 @@ export async function updateBookmarkOnVisit(id){
   if (!updatedBookmark) {
     throw new ApiError(404, 'Boomark not found')
   }
-  return updatedBookmark
 }
 
 export async function archiveBookmark(id, state){
@@ -138,5 +137,4 @@ export async function archiveBookmark(id, state){
   if (!updatedBookmark) {
     throw new ApiError(404, 'Boomark not found')
   }
-  return updatedBookmark
 }
