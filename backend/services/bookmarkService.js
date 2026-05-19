@@ -2,6 +2,7 @@ import sanitizeHtml from 'sanitize-html'
 import { scrape } from '../utils/scrapeUrl.js'
 import { Bookmark } from '../models/Bookmark.js'
 import ApiError from '../utils/ApiError.js'
+import mongoose from 'mongoose'
 
 function escapeRegex(text) {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -22,7 +23,7 @@ export async function getBookmarks({ category, search, sortBy, archived, pinned 
   }
   if (category) {
     const tags = category.split(',')
-    filter.category = { $in: tags }
+    filter.category = mongoose.trusted({ $in: tags }) 
   }
 
   if (search) {

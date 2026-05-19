@@ -5,11 +5,16 @@ import { categoryRouter } from './routes/category.js'
 import { connectDB } from './config/db.js'
 import dotenv from 'dotenv'
 import helmet from 'helmet'
+import morgan from 'morgan'
+import mongoose from 'mongoose'
 
 dotenv.config()
 
 const app = express()
+
+mongoose.set('sanitizeFilter', true)
 app.use(helmet())
+app.use(morgan('dev'))
 
 const allowedOrigins = process.env.ALLOWED_ORIGIN?.split(',') || ['http://localhost:5173']
 
