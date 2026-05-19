@@ -4,6 +4,10 @@ async function bookmarkRequest(endpoint, options = {}){
   try {
     const res = await fetch(`${BASE_URL}${endpoint}`, options)
     if(!res.ok){
+      if(res.status === 429){
+        const message = await res.json()
+        throw new Error(message.error || 'Please try again later')
+      }
       const err = await res.json()
       throw new Error(err.message || 'Bookmark request failed')
     }
