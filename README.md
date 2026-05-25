@@ -93,7 +93,8 @@ This system allows users to store bookmarks with minimal effort while maintainin
     │   └── categoryController.js
     │
     ├── middleware/
-    │   └── bookmarkValidation.js
+    │   ├── bookmarkValidation.js
+    │   └── rateLimiter.js
     │
     ├── services/
     │   ├── bookmarkService.js
