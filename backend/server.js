@@ -11,7 +11,7 @@ import mongoose from 'mongoose'
 dotenv.config()
 
 const app = express()
-app.set('trust proxy', 1)
+app.set('trust proxy', 3)
 
 mongoose.set('sanitizeFilter', true)
 
@@ -39,15 +39,6 @@ await connectDB()
 
 app.use('/api/bookmarks', bookmarkRouter)
 app.use('/api/categories', categoryRouter)
-
-app.get('/ip', (req, res) => {
-  res.json({
-    ip: req.ip,
-    ips: req.ips,
-    'x-forwarded-for': req.headers['x-forwarded-for'],
-    'x-real-ip': req.headers['x-real-ip']
-  })
-})
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Invalid Route'})
