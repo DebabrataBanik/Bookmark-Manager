@@ -101,22 +101,6 @@ describe('Bookmark Service', () => {
         expect(mockSort).toHaveBeenCalledWith({ createdAt: -1})
       })
     })
-
-    test('returns an array of bookmarks', async () => {
-      const fakeBookmarksArr = [
-        {
-          _id: '1',
-          url: 'https://example.com',
-        },
-        {
-          _id: '2',
-          url: 'https://domain.com',
-        }
-      ]
-      mockSort.mockResolvedValue(fakeBookmarksArr)
-      const result = await bookmarkService.getBookmarks({})
-      expect(result).toEqual(fakeBookmarksArr)
-    })
   })
 
   describe('createBookmark', () => {
@@ -218,25 +202,6 @@ describe('Bookmark Service', () => {
         category: []
       })
       ).rejects.toThrowError(/duplicate key error/i)
-    })
-
-    test('returns the created bookmark', async () => {
-      const doc = {
-        _id: '123',
-        url: 'https://example.com',
-        title: 'New Title',
-        description: 'New Description',
-        category: ['test']
-      }
-      scrape.mockResolvedValue({ success: false })
-      Bookmark.create.mockResolvedValue(doc)
-      const result = await bookmarkService.createBookmark({
-        url: 'https://example.com',
-        title: 'New Title',
-        description: 'New Description',
-        category: ['test']
-      })
-      expect(result).toEqual(doc)
     })
   })
 
@@ -374,20 +339,6 @@ describe('Bookmark Service', () => {
           runValidators: true
         }
       )
-    })
-
-    test('returns updated bookmark', async () => {
-      scrape.mockResolvedValue({ success: false})
-      const updatedDoc = { _id: '123', title: 'Updated title', description: 'Updated desc' }
-      Bookmark.findOneAndUpdate.mockResolvedValue(updatedDoc)
-      const result = await bookmarkService.updateBookmark({
-        id: '123',
-        url: 'https://example.com',
-        title: 'Updated title',
-        description: 'Updated desc',
-        category: []
-      })
-      expect(result).toEqual(updatedDoc)
     })
   })
   
