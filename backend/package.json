@@ -7,7 +7,7 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
     "dev": "nodemon server.js",
     "start": "node server.js"
   },
@@ -39,5 +39,8 @@
     "nodemon": "^3.1.14",
     "sanitize-html": "^2.17.3",
     "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.7"
   }
 }
