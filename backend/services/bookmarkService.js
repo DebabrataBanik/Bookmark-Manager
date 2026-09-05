@@ -31,7 +31,7 @@ export async function getBookmarks({ category, search, sortBy, archived, pinned 
       throw new ApiError(400, 'Search query too long')
     }
     const searchStr = escapeRegex(search)
-    filter.title = { $regex: searchStr, $options: 'i' }
+    filter.title = mongoose.trusted({ $regex: searchStr, $options: 'i' })
   }
 
   const sort = sortMap[sortBy] || { createdAt: -1 }
